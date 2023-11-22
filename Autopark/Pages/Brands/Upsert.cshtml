@@ -1,0 +1,45 @@
+﻿@page
+@model Autopark.Pages.Brands.UpsertModel
+@{
+    ViewData["Title"] = "Brand";
+}
+<form method="post">
+    @if(Model._brand == null)
+    {
+        <h2>Create brand</h2>
+    } else
+    {
+        <h2>Edit vehicle</h2>
+        <label asp-for="_brand.Id"></label>
+        <input asp-for="_brand.Id"/>
+    }
+
+    <label asp-for="_brand.Name"></label>
+    <input asp-for="_brand.Name"/>
+    <span asp-validation-for="_brand.Name"></span>
+
+    <select asp-for="@Model._brand.Type" asp-items="@Model._types">
+        <option disabled selected>***Select Type***</option>
+    </select>
+    <label asp-for="_brand.Type"></label>
+    <span asp-validation-for="_brand.Type"></span>
+
+    <select asp-for="@Model._brand.Segment" asp-items="@Model._segments">
+        <option disabled selected>***Select Type***</option>
+    </select>
+    <label asp-for="_brand.Segment"></label>
+    <span asp-validation-for="_brand.Segment"></span>
+
+    <select asp-for="@Model._brand.RequiredDriverCategory" asp-items="@Model._categories">
+        <option disabled selected>***Select Type***</option>
+    </select>
+    <label asp-for="_brand.RequiredDriverCategory"></label>
+    <span asp-validation-for="_brand.RequiredDriverCategory"></span>
+
+    <label asp-for="_brand.SeatsAmount"></label>
+    <input asp-for="_brand.SeatsAmount"/>
+    <span asp-validation-for="_brand.SeatsAmount"></span>
+
+    <button type="submit">Submit</button>
+    <a asp-page="/vehicles"></a>
+</form>

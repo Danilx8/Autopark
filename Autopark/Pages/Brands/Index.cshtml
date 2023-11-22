@@ -1,0 +1,34 @@
+﻿@page
+@model Autopark.Pages.Brands.IndexModel
+@{
+    ViewData["Title"] = "Brands Catalogue";
+}
+
+    @foreach (var brand in Model.Brands)
+    {
+        <div>
+            <a asp-page="/Brands/Upsert">Create new brand</a>
+            <ul>
+                <li>
+                    Id: @brand.Id.
+                </li>
+                <li>
+                    Name: @brand.Name.
+                </li>
+                <li>
+                    Type: @brand.Type.ToString().ToLower().
+                </li>
+                <li>
+                    Segment: @brand.Segment.ToString().ToLower().
+                </li>
+                <li>
+                    Driver's Category: @brand.RequiredDriverCategory.ToString().
+                </li>
+                <li>
+                    Typical Amount Of Seats: @brand.SeatsAmount.
+                </li>
+            </ul>
+            <a asp-page="/Brands/Upsert" asp-route-id="@brand.Id">Edit brand</a>
+            <a asp-page="/Brands/Delete" asp-route-id="@brand.Id">Delete brand</a>
+        </div>
+    }

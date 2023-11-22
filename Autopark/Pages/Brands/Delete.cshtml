@@ -1,0 +1,22 @@
+﻿@page
+@model Autopark.Pages.Brands.DeleteModel
+@{
+    ViewData["Title"] = "Delete brand";
+}
+
+<form method="post">
+    <h2>Delete brand</h2>    
+    <label asp-for="_brand.Id"></label>
+    <input asp-for="_brand.Id" disabled />
+    <label asp-for="_brand.Name"></label>
+    <input asp-for="_brand.Name" disabled />
+    <label asp-for="_brand.Type"></label>
+    <input asp-for="_brand.Type" disabled />
+    <label asp-for="_brand.SeatsAmount"></label>
+    <input asp-for="_brand.SeatsAmount" disabled />
+    <label asp-for="_brand.Segment"></label>
+    <input asp-for="_brand.Segment" disabled />
+    
+    <button type="submit">Delete</button>
+    <a asp-page="/Brands"></a>
+</form>
