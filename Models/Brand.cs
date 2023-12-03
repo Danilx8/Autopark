@@ -41,5 +41,6 @@ namespace Autopark.Models
         public int SeatsAmount { get; set; }
         public Segments Segment { get; set; }
         public Categories RequiredDriverCategory { get; set; }
+        public List<Vehicle>? Vehicles { get; set; } = new();
     }
 }

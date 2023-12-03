@@ -25,7 +25,9 @@ namespace Autopark.Controllers
                     Mileage         = v.Mileage,
                     Year            = v.Year,
                     HorsePower      = v.HorsePower,
-                    BrandId         = v.BrandId
+                    BrandId         = v.BrandId,
+                    DriverId        = v.DriverId,
+                    AssignedDrivers = v.AssignedDrivers
                 })
                 .ToList();
 

@@ -4,6 +4,7 @@ using Autopark.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Autopark.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231127130036_AddDriverAndEnterpriseModelsAndConnectionsBetweenExistingOnes")]
+    partial class AddDriverAndEnterpriseModelsAndConnectionsBetweenExistingOnes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -296,66 +299,19 @@ namespace Autopark.Migrations
                         });
                 });
 
-            modelBuilder.Entity("VehicleDriver", b =>
+            modelBuilder.Entity("DriverVehicle", b =>
                 {
-                    b.Property<int>("AssignedDriversId")
-                        .HasColumnType("int");
-
                     b.Property<int>("AssignedCarsId")
                         .HasColumnType("int");
 
-                    b.HasKey("AssignedDriversId", "AssignedCarsId");
+                    b.Property<int>("AssignedDriversId")
+                        .HasColumnType("int");
 
-                    b.HasIndex("AssignedCarsId");
+                    b.HasKey("AssignedCarsId", "AssignedDriversId");
 
-                    b.ToTable("VehicleDriver");
+                    b.HasIndex("AssignedDriversId");
 
-                    b.HasData(
-                        new
-                        {
-                            AssignedDriversId = 1,
-                            AssignedCarsId = 1
-                        },
-                        new
-                        {
-                            AssignedDriversId = 2,
-                            AssignedCarsId = 1
-                        },
-                        new
-                        {
-                            AssignedDriversId = 3,
-                            AssignedCarsId = 2
-                        },
-                        new
-                        {
-                            AssignedDriversId = 4,
-                            AssignedCarsId = 2
-                        },
-                        new
-                        {
-                            AssignedDriversId = 5,
-                            AssignedCarsId = 6
-                        },
-                        new
-                        {
-                            AssignedDriversId = 1,
-                            AssignedCarsId = 4
-                        },
-                        new
-                        {
-                            AssignedDriversId = 2,
-                            AssignedCarsId = 4
-                        },
-                        new
-                        {
-                            AssignedDriversId = 3,
-                            AssignedCarsId = 5
-                        },
-                        new
-                        {
-                            AssignedDriversId = 4,
-                            AssignedCarsId = 5
-                        });
+                    b.ToTable("DriverVehicle");
                 });
 
             modelBuilder.Entity("Autopark.Models.Driver", b =>
@@ -392,7 +348,7 @@ namespace Autopark.Migrations
                     b.Navigation("Enterprise");
                 });
 
-            modelBuilder.Entity("VehicleDriver", b =>
+            modelBuilder.Entity("DriverVehicle", b =>
                 {
                     b.HasOne("Autopark.Models.Vehicle", null)
                         .WithMany()
