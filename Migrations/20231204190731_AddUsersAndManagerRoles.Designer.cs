@@ -4,6 +4,7 @@ using Autopark.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Autopark.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231204190731_AddUsersAndManagerRoles")]
+    partial class AddUsersAndManagerRoles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -91,13 +94,13 @@ namespace Autopark.Migrations
                         {
                             Id = "1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "25f60ddc-099d-4dd9-9247-60b63b87d2b1",
+                            ConcurrencyStamp = "576a6db8-070e-4328-8279-14087aea19fe",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedUserName = "SAM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEAiGNykfXOPqKStNbrmFBIZfkF9ZwpSVuFOg1nYlGA6ekZOLd3VQ8YnK43TU0vZPDw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBmBMpQUuLXLqiE7/UXx8JvoYccelJbThMUv+okMn5EFCZTTUSjBfupiX0p6hAA/jQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "280f398a-a2bc-4b4a-adc9-e855cf280da1",
+                            SecurityStamp = "1ac01839-9814-4517-8cc9-e2a7565c1862",
                             TwoFactorEnabled = false,
                             UserName = "Manager Sam"
                         },
@@ -105,13 +108,13 @@ namespace Autopark.Migrations
                         {
                             Id = "2",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "60aca7b9-020b-42e2-873c-b4ae4fc8e1c8",
+                            ConcurrencyStamp = "0cf2548c-3798-4e05-aebc-0a884898ade7",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedUserName = "TOM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEAzBgz8x9iMWHNeYldHkl/HrREZwCPTPwFx915lxI2j5IZr6d/6yieqSbXsPkVq7dg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEG0GHChyh7H1GGmfq4GlYRtTM0CCyrnByzr+DKof0i9vn+q5wuln5eTyFW+/e+9FdA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "5ce7e57f-6f19-49a4-b4b5-aef6371f5aa8",
+                            SecurityStamp = "2b4917e5-290f-473f-b9de-691ab1707bd0",
                             TwoFactorEnabled = false,
                             UserName = "Manager Tom"
                         });
@@ -549,18 +552,6 @@ namespace Autopark.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = "1",
-                            RoleId = "1"
-                        },
-                        new
-                        {
-                            UserId = "2",
-                            RoleId = "1"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>

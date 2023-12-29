@@ -1,9 +1,11 @@
 ﻿using Autopark.Data;
 using Autopark.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Autopark.Controllers
 {
+    [Authorize(AuthenticationSchemes = "Bearer", Roles = "manager")]
     public class EnterpriseController : BaseController.BaseController
     {
         private ApplicationDbContext _db;

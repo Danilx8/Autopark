@@ -4,7 +4,7 @@ namespace Autopark.Controllers.BaseController
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public abstract class BaseController
+    public abstract class BaseController : ControllerBase
     {
     }
 }

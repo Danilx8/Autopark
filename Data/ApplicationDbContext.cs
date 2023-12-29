@@ -1,9 +1,12 @@
 ﻿using Autopark.Models;
+using Autopark.Models.Roles;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Autopark.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<AppUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
@@ -14,6 +17,8 @@ namespace Autopark.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             Brand chery = new() { Id = 1, Name = "Chery", RequiredDriverCategory = Brand.Categories.A, SeatsAmount = 5, Segment = Brand.Segments.DAILY, Type = Brand.Types.SUV };
             Brand kamaz = new() { Id = 2, Name = "Kamaz", RequiredDriverCategory = Brand.Categories.E, SeatsAmount = 2, Segment = Brand.Segments.LEASING, Type = Brand.Types.TRUCK };
             Brand ferrari = new() { Id = 3, Name = "Ferrari", RequiredDriverCategory = Brand.Categories.A, SeatsAmount = 2, Segment = Brand.Segments.BUSINESS, Type = Brand.Types.SPORT_CAR };
@@ -34,6 +39,23 @@ namespace Autopark.Data
             Enterprise dhl = new() { Id = 2, Name = "DHL", City = "Мюнхен" };
             Enterprise st = new() { Id = 3, Name = "Сибтранс", City = "Новосибирск" };
 
+            Manager manager = new() { Id = "1" };
+
+            var hasher = new PasswordHasher<AppUser>();
+            AppUser sam = new()
+            {
+                Id = "1",
+                UserName = "Manager Sam",
+                NormalizedUserName = "SAM",
+                PasswordHash = hasher.HashPassword(null, "qwerty")
+            };
+            AppUser tom = new()
+            {
+                Id = "2",
+                UserName = "Manager Tom",
+                NormalizedUserName = "TOM",
+                PasswordHash = hasher.HashPassword(null, "qwerty")
+            };
 
             modelBuilder.Entity<Driver>()
                 .HasOne(d => d.Vehicle)
@@ -63,6 +85,43 @@ namespace Autopark.Data
                             new { AssignedCarsId = 5, AssignedDriversId = 4 });
                     });
 
+            modelBuilder.Entity<Manager>().HasData(manager);
+
+            modelBuilder.Entity<AppUser>().HasData(sam, tom);
+
+            modelBuilder.Entity<IdentityUserRole<string>>().HasData(
+                new IdentityUserRole<string>()
+                {
+                    RoleId = manager.Id,
+                    UserId = sam.Id
+                },
+                new IdentityUserRole<string>()
+                {
+                    RoleId = manager.Id,
+                    UserId = tom.Id
+                });
+
+            modelBuilder.Entity<EnterpriseManager>().HasData(
+                new EnterpriseManager
+                {
+                    UserId = "1",
+                    ManagedEnterpriseId = 1
+                },
+                new EnterpriseManager
+                {
+                    UserId = "1",
+                    ManagedEnterpriseId = 2
+                },
+                new EnterpriseManager
+                {
+                    UserId = "2",
+                    ManagedEnterpriseId = 2
+                },
+                new EnterpriseManager
+                {
+                    UserId = "2",
+                    ManagedEnterpriseId = 3
+                });
 
             modelBuilder.Entity<Vehicle>().HasData(chery8, chery7, chery6, kamazVehicle, ferrariVehicle);
 
@@ -72,5 +131,6 @@ namespace Autopark.Data
 
             modelBuilder.Entity<Enterprise>().HasData(mgt, dhl, st);
         }
+        public DbSet<Autopark.Models.Roles.Manager> Manager { get; set; } = default!;
     }
 }

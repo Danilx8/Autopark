@@ -14,7 +14,8 @@ namespace Autopark.Dto
         public int HorsePower { get; set; }
         public int BrandId { get; set; }
         public int? DriverId { get; set; }
-        public IEnumerable<Driver> AssignedDrivers { get; set; } = new List<Driver>();
+        public int? EnterpriseId { get; set; }
+        public IEnumerable<int> AssignedDrivers { get; set; } = new List<int>();
 
         public VehicleDto() { }
 
@@ -23,6 +24,11 @@ namespace Autopark.Dto
             if (vehicle is null) 
             {
                 return;
+            }
+
+            List<int> assignedDriversIds = new();
+            foreach(Driver driver in vehicle.AssignedDrivers) {
+                assignedDriversIds.Add(driver.Id);
             }
 
             Id              = vehicle.Id;
@@ -34,7 +40,8 @@ namespace Autopark.Dto
             HorsePower      = vehicle.HorsePower;
             BrandId         = vehicle.BrandId;
             DriverId        = vehicle?.Driver?.Id;
-            AssignedDrivers = vehicle.AssignedDrivers;
+            EnterpriseId    = vehicle?.Enterprise?.Id;
+            AssignedDrivers = assignedDriversIds;
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.Contracts;
 
 namespace Autopark.Models
 {
@@ -13,5 +14,6 @@ namespace Autopark.Models
         public List<Vehicle> Vehicles { get; set; } = new();
         [ValidateNever]
         public List<Driver> Drivers { get; set; } = new();
+        public List<EnterpriseManager> EnterpriseManagers { get; set; } = new();
     }
 }

@@ -13,13 +13,13 @@ namespace Autopark.Controllers
             _db = db;    
         }
 
-        public ActionResult<IEnumerable<Brand>> Index()
+        public IActionResult Retrieve()
         {
             List<Brand> brands = _db
                 .Brands
                 .ToList();
 
-            return brands;
+            return Ok(brands);
         } 
     }
 }
