@@ -2,13 +2,13 @@
 using Autopark.Dto;
 using Autopark.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace Autopark.Controllers
 {
-    [Authorize(AuthenticationSchemes = "Bearer", Roles = "manager")]
     public class VehicleController : BaseController.BaseController
     {
         private ApplicationDbContext _db;
@@ -18,30 +18,14 @@ namespace Autopark.Controllers
             _db = db;
         }
 
-        public IActionResult Retrieve()
+        [EnableCors("Frontend")]
+        [HttpGet]
+        public IActionResult Retrieve([FromQuery] PaginationFilter filter)
         {
-            var idClaim = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).FirstOrDefault();
-
-            if (idClaim == null) return Unauthorized();
-
-            AppUser? currentUser = _db.Users
-                .Include(u => u.ManagedCompanies)
-                .Where(u => u.Id == idClaim.Value)
-                .FirstOrDefault();
-
-            if (currentUser == null) return Unauthorized();
-            if (currentUser.ManagedCompanies == null) return Ok();
-
-            List<int> usersCompanies = new();
-            foreach (var company in currentUser.ManagedCompanies)
-            {
-                usersCompanies.Add(company.ManagedEnterpriseId);
-            }
-
             var vehicles = _db
                 .Vehicles
-                .Where(v => usersCompanies.Contains((int)v.EnterpriseId))
-                .Select(v => new VehicleDto(v))
+                .Skip((filter.Page - 1) * filter.Limit)
+                .Take(filter.Limit)
                 .ToList();
 
             return Ok(vehicles);
