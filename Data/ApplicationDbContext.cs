@@ -61,7 +61,8 @@ namespace Autopark.Data
                 .HasOne(d => d.Vehicle)
                 .WithOne(v => v.Driver)
                 .HasForeignKey<Vehicle>(v => v.DriverId)
-                .IsRequired(false);
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<Driver>()
                 .HasMany(d => d.AssignedCars)

@@ -7,6 +7,7 @@ namespace Autopark.Models
     public class Driver
     {
         [Key]
+        //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public string Name { get; set; } = null!;
         public int Salary { get; set; }

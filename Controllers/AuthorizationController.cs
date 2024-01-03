@@ -66,6 +66,7 @@ namespace Autopark.Controllers
                     expiration = token.ValidTo
                 });
             }
+
             return Unauthorized();
         }
     }

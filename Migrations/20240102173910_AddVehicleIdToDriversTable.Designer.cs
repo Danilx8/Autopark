@@ -4,6 +4,7 @@ using Autopark.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Autopark.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240102173910_AddVehicleIdToDriversTable")]
+    partial class AddVehicleIdToDriversTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -91,13 +94,13 @@ namespace Autopark.Migrations
                         {
                             Id = "1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "0f8a5789-6e29-40bd-8aae-2461859061e4",
+                            ConcurrencyStamp = "7870cba3-35ad-4142-855f-2d0235d9094c",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedUserName = "SAM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEPcE8q4XsYLkE/7I8ufnqbAHxYTFDGTfM5vR9Wy12qW+/L+K3Xj72mLd5GnCnS3Hyw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAENOxird6zO0was5hkNhFgldd/mD/vZXEjfIEPLYwqWsQsbZudLyxmViCtzdxt3rAiw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "8bafea7d-a3ef-4d10-90c5-7fc690bb0c0e",
+                            SecurityStamp = "a740c859-a427-42cc-9824-7f7b1966bac4",
                             TwoFactorEnabled = false,
                             UserName = "Manager Sam"
                         },
@@ -105,13 +108,13 @@ namespace Autopark.Migrations
                         {
                             Id = "2",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "d88c3cb4-29a8-416f-9395-3aca075bef33",
+                            ConcurrencyStamp = "7286e32a-902f-4079-b9d0-01ae6b17b738",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedUserName = "TOM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEFuZNOqyzYhwln1ccceXKkGV8uFUR+B3hJxSPGUXj4W3OaTEUwzCCvV8HPEoTQhHfw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJrQm18wjvjQGi/57dCGtSDCZLmRBtUU1eBiWK8Datykx/1TYNo+zY7K2A22bCn6AQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "06343336-993a-4c14-9a2a-8528d558dd6f",
+                            SecurityStamp = "2fe09bb9-1b7b-426d-a1ac-9cfeb9be21a9",
                             TwoFactorEnabled = false,
                             UserName = "Manager Tom"
                         });
@@ -193,6 +196,9 @@ namespace Autopark.Migrations
                     b.Property<int>("Salary")
                         .HasColumnType("int");
 
+                    b.Property<int>("VehicleId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("EnterpriseId");
@@ -205,35 +211,40 @@ namespace Autopark.Migrations
                             Id = 1,
                             EnterpriseId = 1,
                             Name = "Василий",
-                            Salary = 45000
+                            Salary = 45000,
+                            VehicleId = 0
                         },
                         new
                         {
                             Id = 2,
                             EnterpriseId = 2,
                             Name = "Геннадий",
-                            Salary = 30000
+                            Salary = 30000,
+                            VehicleId = 0
                         },
                         new
                         {
                             Id = 3,
                             EnterpriseId = 3,
                             Name = "Евгений",
-                            Salary = 50000
+                            Salary = 50000,
+                            VehicleId = 0
                         },
                         new
                         {
                             Id = 4,
                             EnterpriseId = 1,
                             Name = "Александр",
-                            Salary = 55000
+                            Salary = 55000,
+                            VehicleId = 0
                         },
                         new
                         {
                             Id = 5,
                             EnterpriseId = 2,
                             Name = "Григорий",
-                            Salary = 35000
+                            Salary = 35000,
+                            VehicleId = 0
                         });
                 });
 
@@ -698,8 +709,7 @@ namespace Autopark.Migrations
 
                     b.HasOne("Autopark.Models.Driver", "Driver")
                         .WithOne("Vehicle")
-                        .HasForeignKey("Autopark.Models.Vehicle", "DriverId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("Autopark.Models.Vehicle", "DriverId");
 
                     b.HasOne("Autopark.Models.Enterprise", "Enterprise")
                         .WithMany("Vehicles")

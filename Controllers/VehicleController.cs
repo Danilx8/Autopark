@@ -1,41 +1,29 @@
-﻿using Autopark.Data;
+﻿using Autopark.Controllers.BaseController;
+using Autopark.Data;
 using Autopark.Dto;
 using Autopark.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace Autopark.Controllers
 {
-    [Authorize(AuthenticationSchemes = "Bearer", Roles = "manager")]
-    public class VehicleController : BaseController.BaseController
+    public class VehicleController : BaseManagerController
     {
-        private ApplicationDbContext _db;
-
-        public VehicleController(ApplicationDbContext db)
+        public VehicleController(ApplicationDbContext db) : base(db)
         {
-            _db = db;
         }
 
         public IActionResult Retrieve()
         {
-            var idClaim = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).FirstOrDefault();
-
-            if (idClaim == null) return Unauthorized();
-
-            AppUser? currentUser = _db.Users
-                .Include(u => u.ManagedCompanies)
-                .Where(u => u.Id == idClaim.Value)
-                .FirstOrDefault();
-
-            if (currentUser == null) return Unauthorized();
-            if (currentUser.ManagedCompanies == null) return Ok();
-
             List<int> usersCompanies = new();
-            foreach (var company in currentUser.ManagedCompanies)
+            try
             {
-                usersCompanies.Add(company.ManagedEnterpriseId);
+                usersCompanies = AuthorizeUsersEnterprises();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
             }
 
             var vehicles = _db
@@ -54,14 +42,25 @@ namespace Autopark.Controllers
                 .Where(b => b.Id == vehicle.BrandId)
                 .FirstOrDefault();
 
-            if (brand == null) return BadRequest();
+            if (brand == null) return BadRequest("Given brand doesn't exist");
 
             Enterprise? enterprise = _db
                 .Enterprises
                 .Where(e => e.Id == vehicle.EnterpriseId)
                 .FirstOrDefault();
 
-            if (enterprise == null) return BadRequest();
+            if (enterprise == null) return BadRequest("Given enterprise doesn't exist");
+
+            List<int> usersCompanies = new();
+            try
+            {
+                usersCompanies = AuthorizeUsersEnterprises();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+            if (!usersCompanies.Contains(enterprise.Id)) return StatusCode(StatusCodes.Status403Forbidden);
 
             Vehicle newVehicle = new()
             {
@@ -89,14 +88,26 @@ namespace Autopark.Controllers
                .Where(b => b.Id == vehicle.BrandId)
                .FirstOrDefault();
 
-            if (brand == null) return BadRequest();
+            if (brand == null) return BadRequest("Given brand doesn't exist");
 
             Enterprise? enterprise = _db
                 .Enterprises
                 .Where(e => e.Id == vehicle.EnterpriseId)
                 .FirstOrDefault();
 
-            if (enterprise == null) return BadRequest();
+            if (enterprise == null) return BadRequest("Given enterprise doesn't exist");
+
+            List<int> usersCompanies = new();
+            try
+            {
+                usersCompanies = AuthorizeUsersEnterprises();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+
+            if (!usersCompanies.Contains(enterprise.Id)) return StatusCode(StatusCodes.Status403Forbidden);
 
             _db
                 .Vehicles
@@ -118,7 +129,23 @@ namespace Autopark.Controllers
 
         public IActionResult Delete(int id)
         {
-            _db.Vehicles.Where(v => v.Id == id).ExecuteDelete();
+            List<int> usersCompanies = new();
+            try
+            {
+                usersCompanies = AuthorizeUsersEnterprises();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+
+            Vehicle? vehicle = _db.Vehicles.Find(id);
+
+            if (vehicle == null) return BadRequest("Given vehicle doesn't exist");
+            if (!usersCompanies.Contains((int)vehicle.EnterpriseId)) return StatusCode(StatusCodes.Status403Forbidden);
+
+            _db.Vehicles.Remove(vehicle);
+            _db.SaveChanges();
             return Ok("Vehicle deleted");
         }
     }

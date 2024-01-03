@@ -1,4 +1,5 @@
-﻿using Autopark.Data;
+﻿using Autopark.Controllers.BaseController;
+using Autopark.Data;
 using Autopark.Dto;
 using Autopark.Models;
 using Autopark.Models.Roles;
@@ -10,35 +11,22 @@ using System.Security.Claims;
 
 namespace Autopark.Controllers
 {
-    [Authorize(AuthenticationSchemes = "Bearer", Roles = "manager")]
-    public class DriverController : BaseController.BaseController
+    public class DriverController : BaseManagerController
     {
-        private ApplicationDbContext _db;
-
-        public DriverController(ApplicationDbContext db)
+        public DriverController(ApplicationDbContext db) : base(db)
         {
-            _db = db;
         }
 
-        [HttpGet]
         public IActionResult Retrieve()
         {
-            var idClaim = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).FirstOrDefault();
-
-            if (idClaim == null) return Unauthorized();
-
-            AppUser? currentUser = _db.Users
-                .Include(u => u.ManagedCompanies)
-                .Where(u => u.Id == idClaim.Value)
-                .FirstOrDefault();
-
-            if (currentUser == null) return Unauthorized();
-            if (currentUser.ManagedCompanies == null) return Ok();
-
             List<int> usersCompanies = new();
-            foreach (var company in currentUser.ManagedCompanies)
+            try
             {
-                usersCompanies.Add(company.ManagedEnterpriseId);
+                usersCompanies = AuthorizeUsersEnterprises();
+            } 
+            catch(UnauthorizedAccessException)
+            {
+                return Unauthorized();
             }
 
             List<DriverDto> drivers = _db
@@ -60,25 +48,17 @@ namespace Autopark.Controllers
 
         public IActionResult Create(DriverDto driver)
         {
-            var idClaim = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).FirstOrDefault();
-
-            if (idClaim == null) return Unauthorized();
-
-            AppUser? currentUser = _db.Users
-                .Include(u => u.ManagedCompanies)
-                .Where(u => u.Id == idClaim.Value)
-                .FirstOrDefault();
-
-            if (currentUser == null) return Unauthorized();
-            if (currentUser.ManagedCompanies == null) return Ok();
-
             List<int> usersCompanies = new();
-            foreach (var company in currentUser.ManagedCompanies)
+            try
             {
-                usersCompanies.Add(company.ManagedEnterpriseId);
+                usersCompanies = AuthorizeUsersEnterprises();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
             }
 
-            if (!usersCompanies.Contains(driver.EnterpriseId)) return BadRequest("You do not manage given enterprise");
+            if (!usersCompanies.Contains(driver.EnterpriseId)) return Forbid("You do not manage given enterprise");
 
             Enterprise? enterprise = _db
                 .Enterprises
@@ -103,6 +83,8 @@ namespace Autopark.Controllers
 
             _db.Drivers.Add(newDriver);
 
+            _db.SaveChanges();
+
             if (vehicle != null)
             {
                 vehicle.DriverId = newDriver.Id;
@@ -116,6 +98,18 @@ namespace Autopark.Controllers
 
         public IActionResult Update(DriverDto driver)
         {
+            List<int> usersCompanies = new();
+            try
+            {
+                usersCompanies = AuthorizeUsersEnterprises();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+
+            if (!usersCompanies.Contains(driver.EnterpriseId)) return Forbid("You do not manage given enterprise");
+
             Enterprise? enterprise = _db
                 .Enterprises
                 .Where(e => e.Id == driver.EnterpriseId)
@@ -130,6 +124,19 @@ namespace Autopark.Controllers
 
             if (vehicle == null && driver.VehicleId != 0) return BadRequest("Given vehicle does not exist");
 
+            if (vehicle?.EnterpriseId != driver.EnterpriseId) return BadRequest("Vehicle enterprise and driver enterprise don't match up");
+
+            Driver? oldDriver = _db
+                .Drivers
+                .Where(d => d.Id == driver.Id)
+                .Include(d => d.Vehicle)
+                .FirstOrDefault();
+
+            if (oldDriver != null && oldDriver.Vehicle != null)
+            {
+                oldDriver.Vehicle= null;
+            }
+
             _db
                 .Drivers
                 .Where(d => d.Id == driver.Id)
@@ -137,6 +144,8 @@ namespace Autopark.Controllers
                     .SetProperty(d => d.Name, d => driver.Name)
                     .SetProperty(d => d.Salary, d => driver.Salary)
                     .SetProperty(d => d.EnterpriseId, d => driver.EnterpriseId));
+
+            _db.SaveChanges();
 
             if (vehicle != null)
             {
@@ -149,9 +158,30 @@ namespace Autopark.Controllers
             return Ok("Driver updated");
         }
 
-        public IActionResult Delete(DriverDto driver)
+        [HttpDelete]
+        public IActionResult Delete(int id)
         {
-            _db.Drivers.Where(d => d.Id == driver.Id).ExecuteDelete();
+            List<int> usersCompanies = new();
+            try
+            {
+                usersCompanies = AuthorizeUsersEnterprises();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+
+            Driver? driver = _db
+                .Drivers
+                .Where(d => d.Id == id)
+                .FirstOrDefault();
+
+            if (driver == null) return NotFound("Given driver doesn't exist");
+
+            if (!usersCompanies.Contains(driver.EnterpriseId)) return Forbid("You do not manage given enterprise");
+
+            _db.Drivers.Remove(driver);
+            _db.SaveChanges();
             return Ok("Driver deleted");
         }
     }
