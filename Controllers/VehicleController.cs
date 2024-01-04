@@ -14,22 +14,14 @@ namespace Autopark.Controllers
         {
         }
 
-        public IActionResult Retrieve()
+        [EnableCors("Frontend")]
+        [HttpGet]
+        public IActionResult Retrieve([FromQuery] PaginationFilter filter)
         {
-            List<int> usersCompanies = new();
-            try
-            {
-                usersCompanies = AuthorizeUsersEnterprises();
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return Unauthorized();
-            }
-
             var vehicles = _db
                 .Vehicles
-                .Where(v => usersCompanies.Contains((int)v.EnterpriseId))
-                .Select(v => new VehicleDto(v))
+                .Skip((filter.Page - 1) * filter.Limit)
+                .Take(filter.Limit)
                 .ToList();
 
             return Ok(vehicles);

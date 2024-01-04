@@ -4,6 +4,7 @@ using Autopark.Dto;
 using Autopark.Models;
 using Autopark.Models.Roles;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,21 +18,14 @@ namespace Autopark.Controllers
         {
         }
 
-        public IActionResult Retrieve()
+        [EnableCors("Frontend")]
+        [HttpGet]
+        public IActionResult Retrieve([FromQuery] PaginationFilter filter)
         {
-            List<int> usersCompanies = new();
-            try
-            {
-                usersCompanies = AuthorizeUsersEnterprises();
-            } 
-            catch(UnauthorizedAccessException)
-            {
-                return Unauthorized();
-            }
-
             List<DriverDto> drivers = _db
                 .Drivers
-                .Where(d => usersCompanies.Contains(d.EnterpriseId))
+                .Skip((filter.Page - 1) * filter.Limit)
+                .Take(filter.Limit)
                 .Select(d => new DriverDto
                 {
                     Id              = d.Id,

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Autopark.Data;
 using Autopark.Models.Roles;
 
-namespace Autopark
+namespace Autopark.Controllers
 {
     public class ManagersController : Controller
     {
