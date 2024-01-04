@@ -9,8 +9,8 @@ namespace Autopark.Models
         [Key]
         public int Id { get; set; }
         public string Name { get; set; } = null!;
-        public double Price { get; set; }        
-        public double ZeroToHundred { get; set; }
+        public int Price { get; set; }        
+        public float ZeroToHundred { get; set; }
         public int Mileage { get; set; }
         public int Year { get; set; }
         public int HorsePower { get; set; }
