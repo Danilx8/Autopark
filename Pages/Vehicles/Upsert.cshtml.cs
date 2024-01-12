@@ -36,7 +36,7 @@ namespace Autopark.Pages.Vehicles
 
             _vehicle = _db.Vehicles
                 .Include(u => u.Brand)
-                .FirstOrDefault(u => u.Id == id);
+                .FirstOrDefault(u => u.Id == id)!;
             if (_vehicle == null)
             {
                 return NotFound();

@@ -5,7 +5,7 @@ VisualStudioVersion = 17.8.34004.107
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Autopark", "Autopark.csproj", "{D313A825-CD07-475C-9D6C-61E10B4CA97C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoparkDataGenerator", "..\AutoparkDataGenerator\AutoparkDataGenerator.csproj", "{D190B174-FA21-4582-9FD0-BA01FE1EB99E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoparkDataGenerator", "..\AutoparkDataGenerator\AutoparkDataGenerator.csproj", "{D190B174-FA21-4582-9FD0-BA01FE1EB99E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

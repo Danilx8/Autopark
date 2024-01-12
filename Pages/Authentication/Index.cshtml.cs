@@ -6,45 +6,65 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.IdentityModel.Tokens;
+using NuGet.Configuration;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
 
 namespace Autopark.Pages.Authentication
 {
-    public class AuthorizationModel : PageModel
+    public class AuthorizationModel(ApplicationDbContext _db, UserManager<AppUser> _userManager) : PageModel
     {
-        private readonly ApplicationDbContext _db;
+        private readonly ApplicationDbContext db = _db;
+        private readonly UserManager<AppUser> userManager = _userManager;
 
-        public AuthorizationModel(ApplicationDbContext db)
-        {
-            _db = db;
-        }
-
+        [BindProperty]
+        public string Username { get; set; } = "";
+        [BindProperty]
+        public string Password { get; set; } = "";
         public void OnGet()
         {
         }
 
-        public ActionResult OnPost(string username, string password, string? returnUrl)
+        public async Task<IActionResult> OnPostAsync(string? returnUrl)
         {
-            PasswordHasher<AppUser> hasher = new();
-            var manager = _db.Users.FirstOrDefault(m => m.UserName == username);
+            var user = _db.Users.Where(u => u.UserName == Username).FirstOrDefault();
 
-            if (manager is null) return BadRequest();
+            if (user == null || !await userManager.CheckPasswordAsync(user, Password)) return Page();
 
-            PasswordVerificationResult isPasswordRight = hasher.VerifyHashedPassword(manager, manager.PasswordHash, password);
+            var userRoles = await userManager.GetRolesAsync(user);
 
-            if (!isPasswordRight.HasFlag(PasswordVerificationResult.Success)) return BadRequest();
+            var authClaims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.NameIdentifier, user.Id),
+                    new Claim(ClaimTypes.Name, user.UserName),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                };
 
-            var claims = new List<Claim>
+            foreach (var userRole in userRoles)
             {
-                new Claim(ClaimTypes.NameIdentifier, manager.UserName),
-                new Claim(ClaimTypes.Role, "manager")
-            };
+                authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+            }
 
-            // создаем объект ClaimsIdentity
-            ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, "Cookies");
-            ClaimsPrincipal principal = new ClaimsPrincipal(claimsIdentity);
-            HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-            return Redirect(returnUrl ?? "/");
+            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("ByYM000OLlMQG6VVVp1OH7Xzyr7gHuw1qvUC5dcGt3SNM"));
+
+            var token = new JwtSecurityToken(
+                issuer: "Sample",
+                audience: "Sample",
+                expires: DateTime.Now.AddHours(3),
+                claims: authClaims,
+                signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+                );
+
+            HttpContext.Response.Cookies.Append(".Autopark.Nugget",
+                new JwtSecurityTokenHandler().WriteToken(token),
+                new CookieOptions
+                {
+                    MaxAge = TimeSpan.FromMinutes(60)
+                });
+
+            return Redirect("/");
         }
     }
 }

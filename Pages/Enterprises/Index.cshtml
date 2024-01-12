@@ -1,0 +1,18 @@
+﻿@page
+@model Autopark.Pages.Enterprises.IndexModel
+@{
+}
+
+<div class="container">
+    <div class="card">
+        <div class="card-header">Управляемые компании</div>
+        <div class="card-body">
+            <ul class="list-group">
+            @foreach (var enterprise in Model.Enterprises)
+            {
+                <li class="list-group-item">@enterprise.Name</li>
+            }
+            </ul>
+        </div>
+    </div>
+</div>

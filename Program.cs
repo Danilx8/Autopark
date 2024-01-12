@@ -1,15 +1,10 @@
 using Autopark.Data;
 using Autopark.Models;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication.OAuth;
+using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -72,6 +67,26 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseCors("Frontend");
+
+app.Use(async (context, next) =>
+{
+    var token = context.Request.Cookies[".Autopark.Nugget"];
+    if (!string.IsNullOrEmpty(token))
+        context.Request.Headers.Append("Authorization", "Bearer " + token);
+    context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+    context.Response.Headers.Append("X-Xss-Protection", "1");
+    context.Response.Headers.Append("X-Frame-Options", "DENY");
+    await next();
+});
+
+app.UseCookiePolicy(new CookiePolicyOptions
+{
+    MinimumSameSitePolicy = SameSiteMode.Lax,
+    HttpOnly = HttpOnlyPolicy.Always,
+    Secure = CookieSecurePolicy.Always
+});
+
+app.UseAuthentication();
 
 app.UseAuthentication();
 app.UseAuthorization();
