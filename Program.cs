@@ -37,7 +37,10 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
-builder.Services.AddRazorPages();
+builder.Services.AddRazorPages(options =>
+{
+    options.Conventions.AuthorizeAreaFolder("Manager", "/Manager");
+});
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Frontend",
@@ -49,7 +52,7 @@ builder.Services.AddCors(options =>
                                 .AllowAnyMethod();
         });
 });
-builder.Services.AddControllersWithViews();
+builder.Services.AddMvc();
 
 var app = builder.Build();
 

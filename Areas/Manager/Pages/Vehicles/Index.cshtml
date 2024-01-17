@@ -1,0 +1,85 @@
+﻿@page "{enterpriseId}"
+@model Autopark.Areas.Manager.Pages.Vehicles.IndexModel
+@{
+    ViewData["Title"] = "Cars Catalogue";
+}
+
+<div class="container-fluid">
+    <p class="lead">
+        <h4 class="display-4">@Model.EnterpriseName</h4>
+        <a class="btn btn-primary" asp-page="/vehicles/upsert" asp-route-enterpriseId="@Model.EnterpriseId">Create new vehicle</a>
+    </p>
+    <div class="card-deck row row-cols-auto overflow-hidden">
+        @foreach (var vehicle in Model.Vehicles)
+        {
+            <div class="card g-5">
+                <div class="card-header">@vehicle.Name</div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            Id: @vehicle.Id
+                        </li>
+                        <li class="list-group-item">
+                            Brand: @vehicle.Brand.Name
+                        </li>
+                        <li class="list-group-item">
+                            Vehicle type: @vehicle.Brand.Type.ToString().ToLowerInvariant()
+                        </li>
+                        <li class="list-group-item">
+                            Seats: @vehicle.Brand.SeatsAmount
+                        </li>
+                        <li class="list-group-item">
+                            Market segment: @vehicle.Brand.Segment.ToString().ToLowerInvariant()
+                        </li>
+                        <li class="list-group-item">
+                            Required Category: @vehicle.Brand.RequiredDriverCategory.ToString().ToLowerInvariant()
+                        </li>
+                        <li class="list-group-item">
+                            Horse Powers: @vehicle.HorsePower
+                        </li>
+                        <li class="list-group-item">
+                            Mileage: @vehicle.Mileage km
+                        </li>
+                        <li class="list-group-item">
+                            0-100: @vehicle.ZeroToHundred s
+                        </li>
+                        <li class="list-group-item">
+                            Cost: @vehicle.Price rub
+                        </li>
+                    </ul>
+                    <div class="float-end mt-1 mb-1">
+                        <a class="btn btn-secondary" asp-page="/vehicles/upsert" asp-route-id="@vehicle.Id" asp-route-enterpriseId="@vehicle.EnterpriseId">
+                            Edit vehicle
+                        </a>
+                        <a class="btn btn-secondary" asp-page="/vehicles/delete" asp-route-id="@vehicle.Id">Delete vehicle</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<nav class="mt-3">
+    <ul class="pagination pagination-lg row">
+        @if (Model.PageNumber < 2)
+        {
+            <li class="page-item disabled col-sm-3">
+                <a class="page-link">Previous</a>
+            </li>
+        }
+        else
+        {
+            var previousPage = Model.PageNumber - 1;
+            <li class="page-item col-sm-3">
+                <a class="page-link" asp-area="Manager" asp-page="/vehicles/index" asp-route-enterpriseId=@Request.RouteValues["enterpriseId"] asp-route-pageNum=@previousPage>Previous</a>
+            </li>
+        }
+
+        @{
+            var nextPage = Model.PageNumber + 1;
+            <li class="page-item col-sm-3">
+                <a class="page-link" asp-area="Manager" asp-page="/vehicles/index" asp-route-enterpriseId=@Request.RouteValues["enterpriseId"] asp-route-pageNum=@nextPage>Next</a>
+            </li>
+        }
+        <h3 class="col-sm-1 align-self-center">@Model.PageNumber</h3>
+    </ul>
+</nav>

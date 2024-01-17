@@ -1,0 +1,122 @@
+﻿@page
+@model Autopark.Areas.Manager.Pages.Vehicles.UpsertModel
+@{
+    if (Model._vehicle != null) ViewData["Title"] = Model._vehicle.Name;
+    else ViewData["Title"] = "Add vehicle";
+}
+
+<form method="post">
+    @if (Model._vehicle == null)
+    {
+        <h2 class="mb-10">Create Vehicle</h2>
+    }
+    else
+    {
+        <h2 class="mb-10">Edit vehicle</h2>
+        <div class="form-group row mb-3">
+            <label class="col-sm-2 col-form-label" asp-for="_vehicle.Id"></label>
+            <div class="col-sm-10">
+                <input class="form-control" asp-for="_vehicle.Id" readonly />
+            </div>
+        </div>
+    }
+    <div class="form-group row mb-3">
+        <label class="col-sm-2 col-form-label" asp-for="_vehicle.Enterprise"></label>
+        <div class="col-sm-10">
+            <input asp-for="_vehicle.EnterpriseId" value=@Model._enterprise.Id hidden />
+            <input class="form-control" placeholder="@Model._enterprise.Name" readonly />
+        </div>
+    </div>
+    <div class="form-group row mb-3">
+        <label class="col-sm-2 col-form-label" asp-for="_vehicle.Name"></label>
+        <div class="col-sm-10">
+            <input class="form-control" asp-for="_vehicle.Name" placeholder="Name" />
+            <span asp-validation-for="_vehicle.Name"></span>
+        </div>
+    </div>
+    <div class="form-group row mb-3">
+        <label class="col-sm-2 col-form-label" asp-for="_vehicle.Brand"></label>
+        <div class="col-sm-10">
+            <select class="form-control" asp-for="_vehicle.BrandId" asp-items="Model._brands">
+                <option disabled selected>***Select Brand***</option>
+            </select>
+            <span asp-validation-for="_vehicle.Brand.Id"></span>
+        </div>
+    </div>
+    <div class="form-group row mb-3">
+        <label class="col-sm-2" asp-for="_vehicle.ZeroToHundred"></label>
+        <div class="col-sm-10">
+            <input class="form-control" asp-for="_vehicle.ZeroToHundred" placeholder="Zero to hundred in seconds" />
+            <span asp-validation-for="_vehicle.ZeroToHundred"></span>
+        </div>
+    </div>
+    <div class="form-group row mb-3">
+        <label class="col-sm-2" asp-for="_vehicle.Mileage"></label>
+        <div class="col-sm-10">
+            <input class="form-control" asp-for="_vehicle.Mileage" placeholder="Mileage" />
+            <span asp-validation-for="_vehicle.Mileage"></span>
+        </div>
+    </div>
+    <div class="form-group row mb-3">
+        <label class="col-sm-2" asp-for="_vehicle.Year"></label>
+        <div class="col-sm-10">
+            <input class="form-control" asp-for="_vehicle.Year" placeholder="Assembly year" />
+            <span asp-validation-for="_vehicle.Year"></span>
+        </div>
+    </div>
+    <div class="form-group row mb-3">
+        <label class="col-sm-2" asp-for="_vehicle.HorsePower"></label>
+        <div class="col-sm-10">
+            <input class="form-control" asp-for="_vehicle.HorsePower" placeholder="Horse powers" />
+            <span asp-validation-for="_vehicle.HorsePower"></span>
+        </div>
+    </div>
+    <div class="form-group row mb-3">
+        <label class="col-sm-2" asp-for="_vehicle.Price"></label>
+        <div class="col-sm-10">
+            <input class="form-control" asp-for="_vehicle.Price" placeholder="Price" />
+            <span asp-validation-for="_vehicle.Price"></span>
+        </div>
+    </div>
+    <div class="form-group row mb-3">
+        <label class="col-sm-2 col-form-label" asp-for="_vehicle.Driver"></label>
+        <div class="col-sm-10">
+            <select class="form-control" asp-for="_vehicle.DriverId" asp-items="Model._drivers">
+                @if (Model._vehicle == null)
+                {
+                    <option disabled selected>***Select current driver***</option>
+                    <option value="">No driver</option>
+                }
+                else if(Model._vehicle.Driver != null)
+                {
+                    <option value="">No driver</option>
+                    <option selected value="_vehicle.Driver.Name"></option>
+                } else {
+                    <option value="" selected>No driver</option>
+                }
+            </select>
+            <span asp-validation-for="_vehicle.DriverId"></span>
+        </div>
+    </div>
+    <div class="form-row row-col-auto">
+        <label class="mb-2" asp-for="_vehicle.AssignedDrivers"></label>
+        <div class="container">
+            <div class="">
+                @foreach (var driver in Model._drivers!)
+                {
+                    <div class="form-check">
+                        <label class="form-check-label">
+                            <input class=" form-check-input" type="checkbox" value="@driver.Value" />
+                            @driver.Text
+                        </label>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="btn-group mt-3">
+        <a class="btn btn-secondary" asp-area="Manager" asp-page="/Vehicles/Index" asp-route-enterpriseId=@Model._enterprise?.Id>Back</a>
+        <button class="btn btn-primary" type="submit">Submit</button>
+    </div>
+</form>

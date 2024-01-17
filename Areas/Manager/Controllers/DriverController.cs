@@ -1,6 +1,5 @@
-﻿using Autopark.Controllers.BaseController;
+﻿using Autopark.Areas.Manager.Dto;
 using Autopark.Data;
-using Autopark.Dto;
 using Autopark.Models;
 using Autopark.Models.Roles;
 using Microsoft.AspNetCore.Authorization;
@@ -10,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
-namespace Autopark.Controllers
+namespace Autopark.Areas.Manager.Controllers
 {
     public class DriverController : BaseManagerController
     {
@@ -24,16 +23,16 @@ namespace Autopark.Controllers
         {
             List<DriverDto> drivers = _db
                 .Drivers
-                .Skip((filter.Page - 1) * filter.Limit)
+                .Skip((filter.PageNum - 1) * filter.Limit)
                 .Take(filter.Limit)
                 .Select(d => new DriverDto
                 {
-                    Id              = d.Id,
-                    Name            = d.Name,
-                    Salary          = d.Salary,
-                    EnterpriseId    = d.EnterpriseId,
-                    VehicleId       = d.Vehicle == null ? 0 : d.Vehicle.Id,
-                    AssignedCarsId  = d.AssignedCars.Select(c => c.Id)
+                    Id = d.Id,
+                    Name = d.Name,
+                    Salary = d.Salary,
+                    EnterpriseId = d.EnterpriseId,
+                    VehicleId = d.Vehicle == null ? 0 : d.Vehicle.Id,
+                    AssignedCarsId = d.AssignedCars.Select(c => c.Id)
                 })
                 .ToList();
 
@@ -128,7 +127,7 @@ namespace Autopark.Controllers
 
             if (oldDriver != null && oldDriver.Vehicle != null)
             {
-                oldDriver.Vehicle= null;
+                oldDriver.Vehicle = null;
             }
 
             _db

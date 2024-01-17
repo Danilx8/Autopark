@@ -1,11 +1,14 @@
-﻿using Autopark.Data;
+﻿using Autopark.Controllers.BaseController;
+using Autopark.Data;
 using Autopark.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
-namespace Autopark.Controllers.BaseController
+namespace Autopark.Areas.Manager.Controllers
 {
+    [Area("Manager")]
     [Authorize(AuthenticationSchemes = "Bearer", Roles = "manager")]
     public abstract class BaseManagerController : BaseController
     {

@@ -4,14 +4,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Logging;
-using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json.Linq;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace Autopark.Pages.Enterprises
+namespace Autopark.Areas.Manager.Pages.Enterprises
 {
     [Authorize(AuthenticationSchemes = "Bearer", Roles = "manager")]
     public class IndexModel(ApplicationDbContext db) : PageModel

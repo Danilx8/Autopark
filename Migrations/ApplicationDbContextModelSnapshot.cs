@@ -143,7 +143,7 @@ namespace Autopark.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Brands");
+                    b.ToTable("Brands", (string)null);
 
                     b.HasData(
                         new
@@ -197,7 +197,7 @@ namespace Autopark.Migrations
 
                     b.HasIndex("EnterpriseId");
 
-                    b.ToTable("Drivers");
+                    b.ToTable("Drivers", (string)null);
 
                     b.HasData(
                         new
@@ -254,7 +254,7 @@ namespace Autopark.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Enterprises");
+                    b.ToTable("Enterprises", (string)null);
 
                     b.HasData(
                         new
@@ -289,7 +289,7 @@ namespace Autopark.Migrations
 
                     b.HasIndex("ManagedEnterpriseId");
 
-                    b.ToTable("EnterpriseManager");
+                    b.ToTable("EnterpriseManager", (string)null);
 
                     b.HasData(
                         new
@@ -360,7 +360,7 @@ namespace Autopark.Migrations
 
                     b.HasIndex("EnterpriseId");
 
-                    b.ToTable("Vehicles");
+                    b.ToTable("Vehicles", (string)null);
 
                     b.HasData(
                         new
@@ -594,7 +594,7 @@ namespace Autopark.Migrations
 
                     b.HasIndex("AssignedCarsId");
 
-                    b.ToTable("VehicleDriver");
+                    b.ToTable("VehicleDriver", (string)null);
 
                     b.HasData(
                         new

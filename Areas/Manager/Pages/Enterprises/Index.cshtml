@@ -1,5 +1,5 @@
 ﻿@page
-@model Autopark.Pages.Enterprises.IndexModel
+@model Autopark.Areas.Manager.Pages.Enterprises.IndexModel
 @{
 }
 
@@ -10,7 +10,9 @@
             <ul class="list-group">
             @foreach (var enterprise in Model.Enterprises)
             {
-                <li class="list-group-item">@enterprise.Name</li>
+                <li class="list-group-item">
+                    <a asp-area="Manager" asp-page="/Vehicles/Index" asp-route-enterpriseId=@enterprise.Id>@enterprise.Name</a>
+                </li>
             }
             </ul>
         </div>

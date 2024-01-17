@@ -1,11 +1,14 @@
 using Autopark.Data;
 using Autopark.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace Autopark.Pages.Brands
+namespace Autopark.Areas.Manager.Pages.Brands
 {
+
+    [Authorize(AuthenticationSchemes = "Bearer", Roles = "manager")]
     public class UpsertModel : PageModel
     {
         private readonly ILogger<UpsertModel> _logger;

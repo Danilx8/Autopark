@@ -46,4 +46,9 @@
     <None Include="Pages\Authentication\Index.cshtml" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Areas\Manager\Data\" />
+    <Folder Include="Areas\Manager\Models\" />
+  </ItemGroup>
+
 </Project>

@@ -1,13 +1,12 @@
-﻿using Autopark.Controllers.BaseController;
+﻿using Autopark.Areas.Manager.Dto;
 using Autopark.Data;
-using Autopark.Dto;
 using Autopark.Models;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
-namespace Autopark.Controllers
+namespace Autopark.Areas.Manager.Controllers
 {
     public class VehicleController : BaseManagerController
     {
@@ -21,7 +20,7 @@ namespace Autopark.Controllers
         {
             var vehicles = _db
                 .Vehicles
-                .Skip((filter.Page - 1) * filter.Limit)
+                .Skip((filter.PageNum - 1) * filter.Limit)
                 .Take(filter.Limit)
                 .ToList();
 
@@ -57,15 +56,15 @@ namespace Autopark.Controllers
 
             Vehicle newVehicle = new()
             {
-                Name            = vehicle.Name,
-                Price           = vehicle.Price,
-                ZeroToHundred   = vehicle.ZeroToHundred,
-                Mileage         = vehicle.Mileage,
-                Year            = vehicle.Year,
-                HorsePower      = vehicle.HorsePower,
-                BrandId         = vehicle.BrandId,
-                EnterpriseId    = vehicle.EnterpriseId,
-                DriverId        = vehicle.DriverId
+                Name = vehicle.Name!,
+                Price = vehicle.Price,
+                ZeroToHundred = vehicle.ZeroToHundred,
+                Mileage = vehicle.Mileage,
+                Year = vehicle.Year,
+                HorsePower = vehicle.HorsePower,
+                BrandId = vehicle.BrandId,
+                EnterpriseId = vehicle.EnterpriseId,
+                DriverId = (int)vehicle.DriverId!
             };
 
             _db.Vehicles.Add(newVehicle);
