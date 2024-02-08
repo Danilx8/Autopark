@@ -29,9 +29,12 @@ builder.Services.AddAuthentication(options =>
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("ByYM000OLlMQG6VVVp1OH7Xzyr7gHuw1qvUC5dcGt3SNM"))
         };
     });
-
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServerDatabase")));
+builder.Services.AddDbContext<ApplicationDbContext>(options => 
+    {
+        options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServerDatabase"),
+            x => x.UseNetTopologySuite());
+        options.EnableSensitiveDataLogging();
+    });
 builder.Services.AddIdentity<AppUser, IdentityRole>(
     options => options.SignIn.RequireConfirmedAccount = true)
     .AddRoles<IdentityRole>()
@@ -52,7 +55,12 @@ builder.Services.AddCors(options =>
                                 .AllowAnyMethod();
         });
 });
-builder.Services.AddMvc();
+builder.Services.AddMvc()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new GeometryConverter());
+        options.JsonSerializerOptions.NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowNamedFloatingPointLiterals;
+    });
 
 var app = builder.Build();
 

@@ -19,7 +19,8 @@ namespace Autopark.Areas.Manager.Pages.Vehicles
         public Enterprise _enterprise { get; set; }
         public IEnumerable<SelectListItem> _brands { get; set; }
         public IEnumerable<SelectListItem>? _drivers { get; set; }
-
+        [BindProperty]
+        public int MinutesOffset { get; set; }
         public UpsertModel(ApplicationDbContext db)
         {
             _db = db;
@@ -86,6 +87,17 @@ namespace Autopark.Areas.Manager.Pages.Vehicles
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+
+            try
+            {
+                _vehicle.AcquireTime.AddMinutes(MinutesOffset);
+            } catch(ArgumentOutOfRangeException)
+            {
+                _vehicle.AcquireTime = DateTime.MinValue;
+            } catch
+            {
+                return BadRequest("The date is wrong");
             }
 
             if (_vehicle.Id == 0)

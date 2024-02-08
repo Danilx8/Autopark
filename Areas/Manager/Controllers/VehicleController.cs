@@ -61,6 +61,7 @@ namespace Autopark.Areas.Manager.Controllers
                 ZeroToHundred = vehicle.ZeroToHundred,
                 Mileage = vehicle.Mileage,
                 Year = vehicle.Year,
+                AcquireTime = DateTime.Parse(vehicle.AcquireTime),
                 HorsePower = vehicle.HorsePower,
                 BrandId = vehicle.BrandId,
                 EnterpriseId = vehicle.EnterpriseId,

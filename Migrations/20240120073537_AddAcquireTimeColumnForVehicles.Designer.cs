@@ -4,21 +4,23 @@ using Autopark.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using NetTopologySuite.Geometries;
 
 #nullable disable
 
 namespace Autopark.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240120073537_AddAcquireTimeColumnForVehicles")]
+    partial class AddAcquireTimeColumnForVehicles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.1")
+                .HasAnnotation("ProductVersion", "8.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -92,13 +94,13 @@ namespace Autopark.Migrations
                         {
                             Id = "1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "f58b5106-1d5c-49f4-8416-e66d62769794",
+                            ConcurrencyStamp = "26b85487-e378-4c0c-94d5-140fa07f5a8d",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedUserName = "SAM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEF5twEtYO7+mwyDJAEG+VjR/JIJsSw5/LVSTjDTHSVE27mJT/cyJ3ygSGVvvf6nYPQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEC5ECwu8zRevAfZyKn5dk4CeV4dq2xBXTLCJrPwa9ENdtrqhj7U7ZlewBYmjcEbPuQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "a845c569-bd58-422f-ac7b-2f274b8a9347",
+                            SecurityStamp = "bfcbb7e9-bd7e-4254-b1f9-6c2c4a883c01",
                             TwoFactorEnabled = false,
                             UserName = "Manager Sam"
                         },
@@ -106,13 +108,13 @@ namespace Autopark.Migrations
                         {
                             Id = "2",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "54e50f68-8d29-42cc-8bd8-36dcb4f5762c",
+                            ConcurrencyStamp = "d1575eda-abd3-4ad8-95bf-5c81d8bbdcf3",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedUserName = "TOM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEOz3LKwZoRYxx/fMjskCu844n1B35YZSJcYA+rXnQtb0MS2u/zCXvHTbIIO+IqvOsQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEGACcI/1cNBFJ9EEnibfolLxbLSJBXVN8Ja9ncdYfyhGH8YlT3nUSKEgdqvcZZHkvA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "834a8a4d-baf9-4dff-a99c-add5ccc93261",
+                            SecurityStamp = "9fe4e1f3-7c43-4b9a-b28f-b14a746e0347",
                             TwoFactorEnabled = false,
                             UserName = "Manager Tom"
                         });
@@ -312,64 +314,6 @@ namespace Autopark.Migrations
                         {
                             UserId = "2",
                             ManagedEnterpriseId = 3
-                        });
-                });
-
-            modelBuilder.Entity("Autopark.Models.Geopoint", b =>
-                {
-                    b.Property<Guid>("UUID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("DriverId")
-                        .HasColumnType("int");
-
-                    b.Property<Point>("Point")
-                        .IsRequired()
-                        .HasColumnType("geography");
-
-                    b.Property<DateTime>("RegisterTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("VehicleId")
-                        .HasColumnType("int");
-
-                    b.HasKey("UUID");
-
-                    b.ToTable("Points");
-
-                    b.HasData(
-                        new
-                        {
-                            UUID = new Guid("b2768ea2-678a-4520-a469-48dd92db5c41"),
-                            DriverId = 1,
-                            Point = (NetTopologySuite.Geometries.Point)new NetTopologySuite.IO.WKTReader().Read("SRID=4326;POINT (1 2)"),
-                            RegisterTime = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            VehicleId = 1
-                        },
-                        new
-                        {
-                            UUID = new Guid("5f0814c7-a66f-4bac-894c-227091ad8c53"),
-                            DriverId = 1,
-                            Point = (NetTopologySuite.Geometries.Point)new NetTopologySuite.IO.WKTReader().Read("SRID=4326;POINT (3 4)"),
-                            RegisterTime = new DateTime(2024, 1, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            VehicleId = 1
-                        },
-                        new
-                        {
-                            UUID = new Guid("95958216-3829-489a-a518-776d3349a957"),
-                            DriverId = 1,
-                            Point = (NetTopologySuite.Geometries.Point)new NetTopologySuite.IO.WKTReader().Read("SRID=4326;POINT (5 6)"),
-                            RegisterTime = new DateTime(2024, 1, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            VehicleId = 1
-                        },
-                        new
-                        {
-                            UUID = new Guid("34451e00-16e8-401d-9a64-812bc5c6d72f"),
-                            DriverId = 1,
-                            Point = (NetTopologySuite.Geometries.Point)new NetTopologySuite.IO.WKTReader().Read("SRID=4326;POINT (7 8)"),
-                            RegisterTime = new DateTime(2024, 1, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            VehicleId = 1
                         });
                 });
 

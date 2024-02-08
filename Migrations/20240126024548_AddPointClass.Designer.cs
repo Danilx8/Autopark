@@ -4,6 +4,7 @@ using Autopark.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 
@@ -12,9 +13,11 @@ using NetTopologySuite.Geometries;
 namespace Autopark.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240126024548_AddPointClass")]
+    partial class AddPointClass
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -92,13 +95,13 @@ namespace Autopark.Migrations
                         {
                             Id = "1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "f58b5106-1d5c-49f4-8416-e66d62769794",
+                            ConcurrencyStamp = "1079a8d2-185e-4c94-90a4-ed4024f077ca",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedUserName = "SAM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEF5twEtYO7+mwyDJAEG+VjR/JIJsSw5/LVSTjDTHSVE27mJT/cyJ3ygSGVvvf6nYPQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEAgfzDQXCWp/J8TfvEJDcFUjpAM0yO5O1+laMIJPY6qdaLOcU3QlWceKfZ/D1q5uhA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "a845c569-bd58-422f-ac7b-2f274b8a9347",
+                            SecurityStamp = "56150b00-b406-468a-ad98-8f2c0a18acab",
                             TwoFactorEnabled = false,
                             UserName = "Manager Sam"
                         },
@@ -106,13 +109,13 @@ namespace Autopark.Migrations
                         {
                             Id = "2",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "54e50f68-8d29-42cc-8bd8-36dcb4f5762c",
+                            ConcurrencyStamp = "1178274b-be0e-4fa2-9d5d-70b71ff4fb1a",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedUserName = "TOM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEOz3LKwZoRYxx/fMjskCu844n1B35YZSJcYA+rXnQtb0MS2u/zCXvHTbIIO+IqvOsQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEOiqjVKDdKzxFnB4puWxpILir+TPFIw2BlbZeDFIp1TusBfPoH8236Qyv7kiTPLwkQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "834a8a4d-baf9-4dff-a99c-add5ccc93261",
+                            SecurityStamp = "cec7d101-b7f9-4726-a3b1-f76047819cde",
                             TwoFactorEnabled = false,
                             UserName = "Manager Tom"
                         });
@@ -336,41 +339,11 @@ namespace Autopark.Migrations
 
                     b.HasKey("UUID");
 
-                    b.ToTable("Points");
+                    b.HasIndex("DriverId");
 
-                    b.HasData(
-                        new
-                        {
-                            UUID = new Guid("b2768ea2-678a-4520-a469-48dd92db5c41"),
-                            DriverId = 1,
-                            Point = (NetTopologySuite.Geometries.Point)new NetTopologySuite.IO.WKTReader().Read("SRID=4326;POINT (1 2)"),
-                            RegisterTime = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            VehicleId = 1
-                        },
-                        new
-                        {
-                            UUID = new Guid("5f0814c7-a66f-4bac-894c-227091ad8c53"),
-                            DriverId = 1,
-                            Point = (NetTopologySuite.Geometries.Point)new NetTopologySuite.IO.WKTReader().Read("SRID=4326;POINT (3 4)"),
-                            RegisterTime = new DateTime(2024, 1, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            VehicleId = 1
-                        },
-                        new
-                        {
-                            UUID = new Guid("95958216-3829-489a-a518-776d3349a957"),
-                            DriverId = 1,
-                            Point = (NetTopologySuite.Geometries.Point)new NetTopologySuite.IO.WKTReader().Read("SRID=4326;POINT (5 6)"),
-                            RegisterTime = new DateTime(2024, 1, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            VehicleId = 1
-                        },
-                        new
-                        {
-                            UUID = new Guid("34451e00-16e8-401d-9a64-812bc5c6d72f"),
-                            DriverId = 1,
-                            Point = (NetTopologySuite.Geometries.Point)new NetTopologySuite.IO.WKTReader().Read("SRID=4326;POINT (7 8)"),
-                            RegisterTime = new DateTime(2024, 1, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            VehicleId = 1
-                        });
+                    b.HasIndex("VehicleId");
+
+                    b.ToTable("Points");
                 });
 
             modelBuilder.Entity("Autopark.Models.Vehicle", b =>
@@ -753,6 +726,25 @@ namespace Autopark.Migrations
                     b.Navigation("Enterprise");
 
                     b.Navigation("Manager");
+                });
+
+            modelBuilder.Entity("Autopark.Models.Geopoint", b =>
+                {
+                    b.HasOne("Autopark.Models.Driver", "Driver")
+                        .WithMany()
+                        .HasForeignKey("DriverId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Autopark.Models.Vehicle", "Vehicle")
+                        .WithMany()
+                        .HasForeignKey("VehicleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Driver");
+
+                    b.Navigation("Vehicle");
                 });
 
             modelBuilder.Entity("Autopark.Models.Vehicle", b =>

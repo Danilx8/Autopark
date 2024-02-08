@@ -13,6 +13,8 @@ namespace Autopark.Models
         public float ZeroToHundred { get; set; }
         public int Mileage { get; set; }
         public int Year { get; set; }
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-ddTHH:mm}", ApplyFormatInEditMode = true)]
+        public DateTime AcquireTime { get; set; }
         public int HorsePower { get; set; }
         public int BrandId { get; set; }
         [ValidateNever]

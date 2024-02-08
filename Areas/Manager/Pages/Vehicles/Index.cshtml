@@ -41,6 +41,9 @@
                             Mileage: @vehicle.Mileage km
                         </li>
                         <li class="list-group-item">
+                            In use since: <div class="time">@vehicle.AcquireTime</div>
+                        </li>
+                        <li class="list-group-item">
                             0-100: @vehicle.ZeroToHundred s
                         </li>
                         <li class="list-group-item">
@@ -83,3 +86,15 @@
         <h3 class="col-sm-1 align-self-center">@Model.PageNumber</h3>
     </ul>
 </nav>
+
+@section Scripts {
+    <script type="text/javascript" language="JavaScript">
+        var offset = new Date();
+        var times = document.getElementsByClassName("time");
+        for (element of times) {
+            var givenTime = new Date(element.textContent);
+            givenTime.setMinutes(givenTime.getMinutes() + (-1 * offset.getTimezoneOffset()));
+            element.textContent = givenTime.toLocaleString();
+        }
+    </script>
+}

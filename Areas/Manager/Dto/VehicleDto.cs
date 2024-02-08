@@ -11,6 +11,7 @@ namespace Autopark.Areas.Manager.Dto
         public float ZeroToHundred { get; set; }
         public int Mileage { get; set; }
         public int Year { get; set; }
+        public string AcquireTime { get; set; }
         public int HorsePower { get; set; }
         public int BrandId { get; set; }
         public int? DriverId { get; set; }
@@ -38,6 +39,7 @@ namespace Autopark.Areas.Manager.Dto
             ZeroToHundred = vehicle.ZeroToHundred;
             Mileage = vehicle.Mileage;
             Year = vehicle.Year;
+            AcquireTime = vehicle.AcquireTime.ToString();
             HorsePower = vehicle.HorsePower;
             BrandId = vehicle.BrandId;
             DriverId = vehicle?.Driver?.Id;
