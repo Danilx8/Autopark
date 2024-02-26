@@ -1,7 +1,7 @@
 ﻿using Autopark.Models;
 using System.Runtime.CompilerServices;
 
-namespace Autopark.Areas.Manager.Dto
+namespace Autopark.Models.Dto
 {
     public class VehicleDto
     {

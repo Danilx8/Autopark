@@ -1,11 +1,12 @@
 ﻿using NetTopologySuite.Geometries;
 using Newtonsoft.Json.Linq;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Autopark.Models
 {
-    public class GeometryConverter : JsonConverter<Point>
+    public class PointConverter : JsonConverter<Point>
     {
         public override Point? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
@@ -14,12 +15,12 @@ namespace Autopark.Models
 
         public override void Write(Utf8JsonWriter writer, Point value, JsonSerializerOptions options)
         {
-            writer.WriteStartObject();
-            writer.WritePropertyName("X Coordinate");
+            writer.WriteStartArray();
+            writer.WriteStartArray();
             writer.WriteNumberValue(value.X);
-            writer.WritePropertyName("Y Coordinate");
             writer.WriteNumberValue(value.Y);
-            writer.WriteEndObject();
+            writer.WriteEndArray();
+            writer.WriteEndArray();
         }
     }
 }

@@ -1,5 +1,7 @@
 using Autopark.Data;
 using Autopark.Models;
+using Autopark.Services.Paths;
+using Autopark.Services.Vehicles;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Identity;
@@ -58,10 +60,11 @@ builder.Services.AddCors(options =>
 builder.Services.AddMvc()
     .AddJsonOptions(options =>
     {
-        options.JsonSerializerOptions.Converters.Add(new GeometryConverter());
+        options.JsonSerializerOptions.Converters.Add(new PointConverter());
         options.JsonSerializerOptions.NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowNamedFloatingPointLiterals;
     });
-
+builder.Services.AddScoped<IPathsService, PathService>();
+builder.Services.AddScoped<IVehiclesService, VehicleService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

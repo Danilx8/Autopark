@@ -1,6 +1,6 @@
-﻿using Autopark.Areas.Manager.Dto;
-using Autopark.Data;
+﻿using Autopark.Data;
 using Autopark.Models;
+using Autopark.Models.Dto;
 using Autopark.Models.Roles;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;

@@ -1,0 +1,129 @@
+﻿@page "{vehicleId}"
+@model Autopark.Areas.Manager.Pages.IndexModel
+@{
+    ViewData["Title"] = Model.VehicleName + "\'s Path";
+}
+
+<form method="post">
+    <div class="row justify-content-start">
+        <div class="col col-md-auto">
+            <label>Start</label>
+            <input class="form-control" id="Start" value="@Model.StartSample" />
+        </div>
+        <div class="col col-md-auto">
+            <label>End</label>
+            <input class="form-control" id="End" value="@Model.EndSample" />
+        </div>
+    </div>
+
+    <div class="btn-group mt-3">
+        <a class="btn btn-secondary" asp-area="Manager" asp-page="/Vehicles/Index" asp-route-enterpriseId="@Model.VehicleEnterpriseId">
+            Back
+        </a>
+        <button class="btn btn-primary" type="button" id="Submit">Submit</button>
+    </div>
+</form>
+
+<div class="card mt-3">
+    <div class="header">
+        Rides visualized
+    </div>
+        <div id="map" class="card-body" style="height:600px">
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+
+    <!-- Yandex JavaScript API -->
+    <!-- <script src="https://api-maps.yandex.ru/v3/?lang=ru_RU&apikey=debad5fe-285d-4491-9cb6-01ad6dc65242" type="text/javascript"></script> -->
+    <script type="text/javascript" language="JavaScript">
+        var submitButton = document.getElementById("Submit");
+        submitButton.addEventListener("click", function () {
+            const pathNames = window.location.pathname.split('/');
+            const vehicleId = pathNames[pathNames.length - 1];
+
+            const offset = new Date();
+            const timezone = offset.getTimezoneOffset() * -1;
+
+            const startString = $("#Start").val();
+            const [startDay, startMonth, startYearAndTime] = startString.split('.');
+            const [startYear, startTime] = startYearAndTime.split(' ');
+            const [startHours, startMinutes, startSeconds] = startTime.split(':');
+
+            const endString = $("#End").val();
+            const [endDay, endMonth, endYearAndTime] = endString.split('.');
+            const [endYear, endTime] = endYearAndTime.split(' ');
+            const [endHours, endMinutes, endSeconds] = endTime.split(':');
+
+            var formData = {
+                start: new Date(startYear, startMonth, startDay, startHours, startMinutes, startSeconds, 0),
+                end: new Date(endYear, endMonth, endDay, endHours, endMinutes, endSeconds, 0),
+                minutesOffset: timezone
+            };
+
+            $.ajax({
+                type: "post",
+                url: "/api/geo/renderPathMap/" + vehicleId,
+                data: JSON.stringify(formData),
+                encode: true,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+                success: function (response, status) {
+                    //renderYandexMap(response);
+                    response = JSON.parse(response);
+                    console.log(response.CenterCoordinates);
+                    renderLeafletMap(response);
+                },
+                error: function (response) {
+                    alert("Failed to render the picture: ", response.error);
+                }
+            });
+
+            async function renderYandexMap(data) {
+                await ymaps.ready;
+
+                const map = new ymaps.YMap(document.getElementById('map'), {
+                    location: {
+                        center: data.CenterCoordinates.coordinates,
+                        zoom: 10
+                    }
+                });
+
+                data.rides.forEach(r => {
+                    map.addChild(new YMapFeature({
+                        geometry: {
+                            type: 'LineString',
+                            coordinates: r.Path,
+                            style: {
+                                stroke: [{ width: 8, color: r.color }]
+                            }
+                        }
+                    }));
+                });
+            }
+
+            function renderLeafletMap(data) {
+                var map = L.map('map').setView(data.CenterCoordinates.coordinates.reverse(), 8);
+
+                L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                }).addTo(map);
+
+                data.Rides.forEach(ride => {
+                    ride.Path.coordinates.forEach(coord => coord.reverse());
+                    var line = L.polyline(ride.Path.coordinates, { color: ride.Color }).addTo(map);
+                    line.bindPopup(new Date(ride.Ride.Start).toLocaleString() + " - " + new Date(ride.Ride.Finish).toLocaleString());
+                });
+            }
+        });
+    </script>
+}

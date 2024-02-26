@@ -1,6 +1,6 @@
 ﻿using Autopark.Models;
 
-namespace Autopark.Areas.Manager.Dto
+namespace Autopark.Models.Dto
 {
     public class DriverDto
     {

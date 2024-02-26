@@ -17,6 +17,7 @@ namespace Autopark.Data
         public DbSet<Enterprise> Enterprises { get; set; }
         public DbSet<Driver> Drivers { get; set; }
         public DbSet<Geopoint> Points { get; set; }
+        public DbSet<Ride> Rides { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

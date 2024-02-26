@@ -9,7 +9,7 @@ namespace Autopark.Models
     {
         [Key]
         public Guid UUID { get; set; } = Guid.NewGuid();
-        [JsonConverter(typeof(GeometryConverter))]
+        [JsonConverter(typeof(PointConverter))]
         public required Point Point { get; set; }
         public required DateTime RegisterTime { get; set; }
         public int VehicleId { get; set; }

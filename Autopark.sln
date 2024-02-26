@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Autopark", "Autopark.csproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoparkDataGenerator", "..\AutoparkDataGenerator\AutoparkDataGenerator.csproj", "{D190B174-FA21-4582-9FD0-BA01FE1EB99E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoparkPathsGenerator", "..\AutoparkPathsGenerator\AutoparkPathsGenerator.csproj", "{99B919BD-C7C8-4571-86D0-F631F657036C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoparkPathsGenerator", "..\AutoparkPathsGenerator\AutoparkPathsGenerator.csproj", "{99B919BD-C7C8-4571-86D0-F631F657036C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

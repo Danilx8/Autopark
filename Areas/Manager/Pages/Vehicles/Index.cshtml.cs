@@ -24,16 +24,6 @@ namespace Autopark.Areas.Manager.Pages.Vehicles
             _logger = logger;
         }
 
-        //public void OnGet([FromQuery] PaginationFilter filter)
-        //{
-        //    Vehicles = [.. 
-        //        _db
-        //        .Vehicles
-        //        .Skip((filter.Page - 1) * filter.Limit)
-        //        .Take(filter.Limit)
-        //        .Include(u => u.Brand)];
-        //}
-
         public void OnGet(int enterpriseId, [FromQuery] PaginationFilter filter)
         {
             Vehicles = [..
