@@ -1,0 +1,46 @@
+name: seed-db
+on: 
+  workflow_dispatch:
+jobs:
+  seed-data:
+    name: Seed main entities of project
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone data generator
+        uses: GuillaumeFalourd/clone-github-repo-action@v2.3
+        with: 
+          owner: 'Danilx8'
+          repository: 'AutoparkDataGenerator'
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Restore dependencies
+        run: dotnet restore "./AutoparkDataGenerator.csproj"
+      - name: Build
+        run: dotnet build --no-restore "./AutoparkDataGenerator.csproj"
+      - name: Seed data
+        shell: bash
+        run: |
+          ./bin/Release/net8.0/AutoparkDataGenerator.exe -e 1 -c 1000;
+          ./bin/Release/net8.0/AutoparkDataGenerator.exe -e 1 -c 1000;
+          ./bin/Release/net8.0/AutoparkDataGenerator.exe -e 1 -c 1000;
+  
+#  seed-rides:
+#    needs: seed-data
+#    name: Seed rides of various vehicles
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Clone paths generator
+#        uses: GuillaumeFalourd/clone-github-repo-action@v2.3
+#        with:
+#          owner: 'Danilx8'
+#          repository: 'AutoparkPathsGenerator'
+#      - name: Restore dependencies
+#        run: dotnet restore './AutoparkPathsGenerator.csproj'
+#      - name: Build
+#        run: dotnet build --no-restore './AutoparkDataGenerator.csproj'
+#      - name: Seed paths
+#        shell: bash
+#        run: |
+        
