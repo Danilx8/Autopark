@@ -1,0 +1,98 @@
+﻿@page "{reportType}/{vehicleId}"
+@model Autopark.Areas.Manager.Pages.Summary.IndexModel
+@{
+}
+<form method="post">
+    <div class="row justify-content-end">
+        <div class="col col-md-auto">
+            <label asp-for="@Model.Intervals"></label>
+            <select class="form-control" asp-for="@Model.Interval" asp-items="@Model.Intervals">
+                <option disabled selected>***Select desired interval***</option>
+            </select>
+        </div>
+        <div class="col col-md-auto">
+            <label>Start</label>
+            <input class="form-control" asp-for="@Model.Start" />
+        </div>
+        <div class="col col-md-auto">
+            <label>End</label>
+            <input class="form-control" asp-for="@Model.End" />
+        </div>
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Date</th>
+            <th scope="col">Mileage</th>
+        </tr>
+    </thead>
+    <tbody id="tableBody">
+    </tbody>
+</table>
+
+<div class="btn-group mt-3">
+    <a class="btn btn-secondary" asp-area="Manager" asp-page="/Vehicles/Index" asp-route-enterpriseId="@Model.VehicleEnterpriseId">
+        Back
+    </a>
+    <button class="btn btn-primary" type="button" id="Submit">Submit</button>
+</div>
+
+@section Scripts {
+    <script type="text/javascript" language="JavaScript">
+        var submitButton = document.getElementById("Submit");
+        submitButton.addEventListener("click", function () {
+            const pathNames = window.location.pathname.split('/');
+            const vehicleId = pathNames[pathNames.length - 1];
+
+            const offset = new Date();
+            const timezone = offset.getTimezoneOffset() * -1;
+
+            const start = document.getElementById('Start').value;
+            const end = document.getElementById('End').value;
+
+            var formData = {
+                start: start,
+                end: end,
+                minutesOffset: timezone
+            };
+
+            const interval = document.getElementById('Interval').value;
+
+            $.ajax({
+                type: 'post',
+                url: '/api/reports/createvehiclesreport/' + vehicleId + '/' + interval,
+                data: JSON.stringify(formData),
+                encode: true,
+                headers: {
+                    'Content-Type': 'application/json'
+                        },
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+                success: function (response, status) {
+                    displayReport(response);
+                },
+                error: function (response) {
+                    alert("Failed to render the picture: ", response.error);
+                }
+            });
+
+            function displayReport(data) {
+                const table = document.getElementById('tableBody');
+                while(table.childNodes.length > 1) {
+                    table.deleteRow(0);
+                }
+                for (const [key, value] of Object.entries(data)) {
+                    let row = table.insertRow();
+                    let date = row.insertCell(0);
+                    date.innerHTML = new Date(key).toLocaleDateString();
+                    let mileage = row.insertCell(1);
+                    mileage.innerHTML = value;
+                }
+            }
+        })
+    </script>
+}

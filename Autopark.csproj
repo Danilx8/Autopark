@@ -5,35 +5,35 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>a748834c-0aa3-4198-9b8c-3e6c1badb61c</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>.</DockerfileContext>
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Areas\Manager\Pages\Reports\Index.cshtml" />
     <Content Remove="Pages\Authorization.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Humanizer" Version="3.0.0-beta.13">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="8.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid.EntityFrameworkAdapter" Version="8.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="8.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite" Version="8.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="8.0.1" />
-    <PackageReference Include="Microsoft.IdentityModel.Abstractions" Version="7.3.0" />
     <PackageReference Include="Microsoft.IdentityModel.Logging" Version="7.3.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
+    <PackageReference Include="NetTopologySuite" Version="2.5.0" />
+    <PackageReference Include="NetTopologySuite.Features" Version="2.1.0" />
     <PackageReference Include="NetTopologySuite.IO.GeoJSON" Version="4.0.0" />
   </ItemGroup>
 
@@ -42,11 +42,26 @@
   </ItemGroup>
 
   <ItemGroup>
+    <_ContentIncludedByDefault Remove="Areas\Manager\Pages\Reports\Index.cshtml" />
     <_ContentIncludedByDefault Remove="Pages\Authorization.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Areas\Manager\Pages\Reports\Index.cshtml" />
     <None Include="Pages\Authentication\Index.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Areas\Manager\Pages\Reports\Index.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="AutoparkDataGenerator">
+      <HintPath>..\AutoparkDataGenerator\obj\Release\net8.0\AutoparkDataGenerator.dll</HintPath>
+    </Reference>
+    <Reference Include="AutoparkPathsGenerator">
+      <HintPath>..\AutoparkPathsGenerator\obj\Release\net8.0\AutoparkPathsGenerator.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

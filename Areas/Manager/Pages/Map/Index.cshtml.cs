@@ -2,7 +2,7 @@ using Autopark.Models;
 using Autopark.Services.Vehicles;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Autopark.Areas.Manager.Pages
+namespace Autopark.Areas.Manager.Pages.Map
 {
     public class IndexModel(IVehiclesService _vehicles, IConfiguration _options) : PageModel
     {

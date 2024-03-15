@@ -135,38 +135,8 @@ namespace Autopark.Data
             modelBuilder.Entity<Driver>().HasData(vasyl, gena, jenya, sanya, grisha);
 
             modelBuilder.Entity<Enterprise>().HasData(mgt, dhl, st);
-
-            var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
-            modelBuilder.Entity<Geopoint>().HasData(
-                new Geopoint
-                {
-                    DriverId = 1,
-                    VehicleId = 1,
-                    RegisterTime = new DateTime(2024, 1, 1),
-                    Point = geometryFactory.CreatePoint(new Coordinate(1, 2))
-                },
-                new Geopoint
-                {
-                    DriverId = 1,
-                    VehicleId = 1,
-                    RegisterTime = new DateTime(2024, 1, 2),
-                    Point = geometryFactory.CreatePoint(new Coordinate(3, 4))
-                },
-                new Geopoint
-                {
-                    DriverId = 1,
-                    VehicleId = 1,
-                    RegisterTime = new DateTime(2024, 1, 3),
-                    Point = geometryFactory.CreatePoint(new Coordinate(5, 6))
-                },
-                new Geopoint 
-                { 
-                    DriverId = 1,
-                    VehicleId = 1,
-                    RegisterTime = new DateTime(2024, 1, 4),
-                    Point = geometryFactory.CreatePoint(new Coordinate(7, 8))
-                });
         }
+
         public DbSet<Autopark.Models.Roles.Manager> Manager { get; set; } = default!;
     }
 }

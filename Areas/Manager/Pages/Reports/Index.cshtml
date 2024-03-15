@@ -1,0 +1,110 @@
+﻿@page "{reportType}/{vehicleId}"
+@model Autopark.Areas.Manager.Pages.Reports.IndexModel
+@{
+    ViewData["Title"] = "Report on " + Model.VehicleName;
+}
+
+<form method="post">
+    <div class="row justify-content-end">
+        <div class="col col-md-auto">
+            <label asp-for="@Model.Intervals"></label>
+            <select class="form-control" asp-for="@Model.Interval" asp-items="@Model.Intervals">
+                <option disabled selected>***Select desired interval***</option>
+            </select>
+        </div>
+        <div class="col col-md-auto">
+            <label>Start</label>
+            <input class="form-control" asp-for="@Model.Start" />
+        </div>
+        <div class="row justify-content-end">
+            <label>End</label>
+            <input class="form-control" asp-for="@Model.End" />
+            <input asp-for="@Model.Authorization" hidden />
+        </div>
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Date</th>
+            <th scope="col">Mileage</th>
+        </tr>
+    </thead>
+    <tbody id="tableBody">
+    </tbody>
+</table>
+
+<div class="btn-group mt-3">
+    <a class="btn btn-secondary" asp-area="Manager" asp-page="/Vehicles/Index" asp-route-enterpriseId="@Model.VehicleEnterpriseId">
+        Back
+    </a>
+    <button class="btn btn-primary" type="button" id="Submit">Submit</button>
+</div>
+
+@section Scripts {
+    <script type="text/javascript" language="JavaScript">
+        var submitButton = document.getElementById("Submit");
+        submitButton.addEventListener("click", function () {
+            const pathNames = window.location.pathname.split('/');
+            const vehicleId = pathNames[pathNames.length - 1];
+
+            const offset = new Date();
+            const timezone = offset.getTimezoneOffset() * -1;
+
+            const startString = document.evaluate("//input[contains(@@id, 'Start')]", document, null,
+                XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.nodeValue;
+            const [startDay, startMonth, startYearAndTime] = startString.split('.');
+            const [startYear, startTime] = startYearAndTime.split(' ');
+            const [startHours, startMinutes, startSeconds] = startTime.split(':');
+
+            const endString = document.evaluate("//input[contains(@@id, 'End')]", document, null,
+                XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.nodeValue;
+            const [endDay, endMonth, endYearAndTime] = endString.split('.');
+            const [endYear, endTime] = endYearAndTime.split(' ');
+            const [endHours, endMinutes, endSeconds] = endTime.split(':');
+
+            var formData = {
+                start: new Date(startYear, startMonth, startDay, startHours, startMinutes, startSeconds, 0),
+                end: new Date(endYear, endMonth, endDay, endHours, endMinutes, endSeconds, 0),
+                minutesOffset: timezone
+            };
+
+            const interval = document.evaluate("//select[contains(@@id, 'Interval')]", document, null,
+                XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.nodeValue;
+
+            $.ajax({
+                type: 'post',
+                url: 'api/reports/createvehiclesreport' + vehicleId + '/' + interval,
+                data: JSON.stringify(formData),
+                encode: true,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 
+                },
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+                success: function (response, status) {
+                    response = JSON.parse(response);
+                    displayReport(response);
+                },
+                error: function (response) {
+                    alert("Failed to render the picture: ", response.error);
+                }
+            });
+
+            function displayReport(data) {
+                const table = document.getElementsByTagName('tableBody');
+                for (const [key, value] of data) {
+                    let row = table.insertRow();
+                    let date = row.insertCell(0);
+                    date.innerHtml = key;
+                    let mileage = row.insertCell(1);
+                    mileage.innerHtml = value;
+                }
+            }
+        }
+    </script>
+}

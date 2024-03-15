@@ -31,7 +31,7 @@ builder.Services.AddAuthentication(options =>
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("ByYM000OLlMQG6VVVp1OH7Xzyr7gHuw1qvUC5dcGt3SNM"))
         };
     });
-builder.Services.AddDbContext<ApplicationDbContext>(options => 
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
     {
         options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServerDatabase"),
             x => x.UseNetTopologySuite());
@@ -67,6 +67,7 @@ builder.Services.AddScoped<IPathsService, PathService>();
 builder.Services.AddScoped<IVehiclesService, VehicleService>();
 var app = builder.Build();
 
+app.UseDeveloperExceptionPage();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -99,8 +100,6 @@ app.UseCookiePolicy(new CookiePolicyOptions
     HttpOnly = HttpOnlyPolicy.Always,
     Secure = CookieSecurePolicy.Always
 });
-
-app.UseAuthentication();
 
 app.UseAuthentication();
 app.UseAuthorization();

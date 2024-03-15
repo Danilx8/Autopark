@@ -52,6 +52,11 @@
                         <li class="list-group-item">
                             <a class="btn btn-link ps-0" asp-page="/map/index" asp-route-vehicleId="@vehicle.Id">See routes</a>
                         </li>
+                        <li class="list-group-item">
+                            <a class="btn btn-link ps-0" asp-page="/summary/index" asp-route-reportType="carmileage" asp-route-vehicleId="@vehicle.Id">
+                                Generate mileage report
+                            </a>
+                        </li>
                     </ul>
                     <div class="float-end mt-1 mb-1">
                         <a class="btn btn-secondary" asp-page="/vehicles/upsert" asp-route-id="@vehicle.Id" asp-route-enterpriseId="@vehicle.EnterpriseId">

@@ -4,23 +4,19 @@ using Autopark.Models.Dto;
 using Autopark.Services.Paths;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using NetTopologySuite;
-using NetTopologySuite.Algorithm;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO;
 using Newtonsoft.Json;
-using System.Globalization;
 using System.Text.Json;
 
 namespace Autopark.Areas.Manager.Controllers
 {
     [ApiController]
-    public class GeoController(ApplicationDbContext db, IPathsService paths,
-        IWebHostEnvironment environment, IConfiguration options) : BaseManagerController(db)
+    public class GeoController(ApplicationDbContext db, IConfiguration options,
+        IPathsService paths) : BaseManagerController(db)
     {
         private readonly IPathsService _paths = paths;
-        private readonly IWebHostEnvironment _environment = environment;
         private readonly IConfiguration _options = options;
 
         [HttpGet]
@@ -95,7 +91,7 @@ namespace Autopark.Areas.Manager.Controllers
 
             using HttpClient client = new();
             client.DefaultRequestHeaders.Add("Accept-Language", "ru-RU");
-            string apiKey = "5b3ce3597851110001cf6248ba643297a7154f94952c7f2968f1f56d";
+            string apiKey = _options["Autopark:ORSDirectionsAPI"]!;
             string orsUrl = "https://api.openrouteservice.org/geocode/reverse?size=1&api_key=" + apiKey;
             foreach (var ride in rides)
             {

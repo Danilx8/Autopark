@@ -5,9 +5,12 @@ VisualStudioVersion = 17.8.34004.107
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Autopark", "Autopark.csproj", "{D313A825-CD07-475C-9D6C-61E10B4CA97C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoparkDataGenerator", "..\AutoparkDataGenerator\AutoparkDataGenerator.csproj", "{D190B174-FA21-4582-9FD0-BA01FE1EB99E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoparkDataGenerator", "..\AutoparkDataGenerator\AutoparkDataGenerator.csproj", "{9FB8EF00-8766-4E5F-90ED-6CB1F1AE767F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D313A825-CD07-475C-9D6C-61E10B4CA97C} = {D313A825-CD07-475C-9D6C-61E10B4CA97C}
+	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoparkPathsGenerator", "..\AutoparkPathsGenerator\AutoparkPathsGenerator.csproj", "{99B919BD-C7C8-4571-86D0-F631F657036C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoparkPathsGenerator", "..\AutoparkPathsGenerator\AutoparkPathsGenerator.csproj", "{98DCC8F5-CD7B-46CF-B0BB-671BFE190D44}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,14 +22,14 @@ Global
 		{D313A825-CD07-475C-9D6C-61E10B4CA97C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D313A825-CD07-475C-9D6C-61E10B4CA97C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D313A825-CD07-475C-9D6C-61E10B4CA97C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D190B174-FA21-4582-9FD0-BA01FE1EB99E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D190B174-FA21-4582-9FD0-BA01FE1EB99E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D190B174-FA21-4582-9FD0-BA01FE1EB99E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D190B174-FA21-4582-9FD0-BA01FE1EB99E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{99B919BD-C7C8-4571-86D0-F631F657036C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{99B919BD-C7C8-4571-86D0-F631F657036C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{99B919BD-C7C8-4571-86D0-F631F657036C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{99B919BD-C7C8-4571-86D0-F631F657036C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9FB8EF00-8766-4E5F-90ED-6CB1F1AE767F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9FB8EF00-8766-4E5F-90ED-6CB1F1AE767F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9FB8EF00-8766-4E5F-90ED-6CB1F1AE767F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9FB8EF00-8766-4E5F-90ED-6CB1F1AE767F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98DCC8F5-CD7B-46CF-B0BB-671BFE190D44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98DCC8F5-CD7B-46CF-B0BB-671BFE190D44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98DCC8F5-CD7B-46CF-B0BB-671BFE190D44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98DCC8F5-CD7B-46CF-B0BB-671BFE190D44}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
