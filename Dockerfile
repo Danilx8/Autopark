@@ -8,10 +8,6 @@ EXPOSE 80
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["AutoparkDataGenerator/AutoparkDataGenerator.csproj", "."]
-RUN dotnet restore "./AutoparkDataGenerator/AutoparkDataGenerator.csproj"
-COPY ["AutoparkPathsGenerator/AutoparkPathsGenerator.csproj", "."]
-RUN dotnet restore "./AutoparkPathsGenerator/AutoparkPathsGenerator.csproj"
 COPY ["Autopark/Autopark.csproj", "."]
 RUN dotnet restore "./Autopark/Autopark.csproj"
 COPY . .
