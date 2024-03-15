@@ -1,0 +1,26 @@
+name: create-database
+on:
+  [push]    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🐋 Startup Container
+        shell: bash
+        run: |
+            docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=A!VeryComplex123Password" \
+            -p 1433:1433 -d mcr.microsoft.com/mssql/server:2022-latest
+      - name: 🚀 Install required PowerShell module
+        uses: potatoqualitee/psmodulecache@v4.5
+        with:
+          modules-to-cache: dbatools
+      - name: 🛢️ Create new database
+        shell: pwsh
+        run: |
+          # Create a PowerShell credential object that can login to the container
+          $password = ConvertTo-SecureString A!VeryComplex123Password -AsPlainText -Force
+          $cred = New-Object System.Management.Automation.PSCredential("sa", $password)
+          # View available databases
+          Get-DbaDatabase -SqlInstance localhost -SqlCredential $cred
+          # Create new database
+          New-DbaDatabase -SqlInstance localhost -SqlCredential $cred -Name AutoparkDb
