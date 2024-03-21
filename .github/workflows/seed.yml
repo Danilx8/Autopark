@@ -19,28 +19,36 @@ jobs:
         run: dotnet restore "./AutoparkDataGenerator.csproj"
       - name: Build
         run: dotnet build --no-restore "./AutoparkDataGenerator.csproj"
-      - name: Seed data
-        shell: bash
+      - name: Install required PowerShell module
+        uses: potatoqualitee/psmodulecache@v4.5
+        with:
+          modules-to-cache: dbatools
+      - name: Seed database
+        shell: pwsh
         run: |
           ./bin/Release/net8.0/AutoparkDataGenerator.exe -e 1 -c 1000;
           ./bin/Release/net8.0/AutoparkDataGenerator.exe -e 1 -c 1000;
           ./bin/Release/net8.0/AutoparkDataGenerator.exe -e 1 -c 1000;
   
-#  seed-rides:
-#    needs: seed-data
-#    name: Seed rides of various vehicles
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Clone paths generator
-#        uses: GuillaumeFalourd/clone-github-repo-action@v2.3
-#        with:
-#          owner: 'Danilx8'
-#          repository: 'AutoparkPathsGenerator'
-#      - name: Restore dependencies
-#        run: dotnet restore './AutoparkPathsGenerator.csproj'
-#      - name: Build
-#        run: dotnet build --no-restore './AutoparkDataGenerator.csproj'
-#      - name: Seed paths
-#        shell: bash
-#        run: |
-        
+  seed-rides:
+     needs: seed-data
+     name: Seed rides of various vehicles
+     runs-on: ubuntu-latest
+     steps:
+       - name: Clone paths generator
+         uses: GuillaumeFalourd/clone-github-repo-action@v2.3
+         with:
+           owner: 'Danilx8'
+           repository: 'AutoparkPathsGenerator'
+       - name: Restore dependencies
+         run: dotnet restore './AutoparkPathsGenerator.csproj'
+       - name: Build
+         run: dotnet build --no-restore './AutoparkDataGenerator.csproj'
+       - name: 🚀 Install required PowerShell module
+         uses: potatoqualitee/psmodulecache@v4.5
+         with:
+          modules-to-cache: dbatools
+       - name: Seed paths
+         shell: pwsh
+         run: |
+           ./bin/Release/net8.0/AutoparkPathsGenerator.exe -v 1 -c Novosibirsk -s 01/12/2022 -f 01/12/2022
