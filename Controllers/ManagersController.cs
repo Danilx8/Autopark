@@ -28,7 +28,7 @@ namespace Autopark.Controllers
         // GET: Managers/Details/5
         public async Task<IActionResult> Details(string id)
         {
-            if (id == null)
+            if (id == "")
             {
                 return NotFound();
             }
