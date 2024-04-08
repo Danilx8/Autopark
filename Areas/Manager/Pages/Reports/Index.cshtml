@@ -43,7 +43,7 @@
 </div>
 
 @section Scripts {
-    <script type="text/javascript" language="JavaScript">
+    <script type="text/javascript">
         var submitButton = document.getElementById("Submit");
         submitButton.addEventListener("click", function () {
             const pathNames = window.location.pathname.split('/');
@@ -79,8 +79,7 @@
                 data: JSON.stringify(formData),
                 encode: true,
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 
+                    'Content-Type': 'application/json'
                 },
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader("XSRF-TOKEN",
@@ -105,6 +104,6 @@
                     mileage.innerHtml = value;
                 }
             }
-        }
+        })
     </script>
 }
