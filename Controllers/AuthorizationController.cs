@@ -33,7 +33,7 @@ namespace Autopark.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginData data)
         {
-            var user = _db.Users.Where(u => u.UserName == data.Username).FirstOrDefault();
+            var user = _db.Users.FirstOrDefault(u => u.UserName == data.Username);
             if (user != null && await userManager.CheckPasswordAsync(user, data.Password))
             {
                 var userRoles = await userManager.GetRolesAsync(user);

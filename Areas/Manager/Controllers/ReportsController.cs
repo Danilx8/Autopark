@@ -7,49 +7,34 @@ using Microsoft.AspNetCore.Mvc;
 using NetTopologySuite.Geometries;
 using System.Data;
 using System.Text.Json;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Autopark.Areas.Manager.Controllers
 {
     public class ReportsController(ApplicationDbContext db, IPathsService paths,
-        IConfiguration options) : BaseManagerController(db)
+        IConfiguration options, IMemoryCache cache) : BaseManagerController(db)
     {
         protected readonly IPathsService paths = paths;
-        protected readonly IConfiguration options = options;
 
         [AllowAnonymous]
         [Route("{vehicleId}/{interval}")]
+        [ResponseCache(VaryByHeader = "User-Agent", Duration = 300)]
         public async Task<IActionResult> CreateVehiclesReport(int vehicleId, string interval,
             [FromBody] TimeDto time)
         {
             if (!Enum.TryParse(interval, out Interval _interval))
                 return BadRequest("Wrong interval format");
 
-            var rides = db
-                .Rides
-                .Where(r => r.VehicleId == vehicleId
-                    && r.Start >= time.Start
-                    && r.Finish <= time.End)
-                .OrderBy(r => r.Start)
-                .ToList();
+            var rides = paths.ReadAllRides(vehicleId, time.Start, time.Finish);
 
             Dictionary<DateOnly, double> mileages = [];
 
             foreach(var ride in rides)
             {
-                var startPoint = db.Points.Where(p => p.RegisterTime.Year == ride.Start.Year
-                                              && p.RegisterTime.Month == ride.Start.Month
-                                              && p.RegisterTime.Day == ride.Start.Day
-                                              && p.RegisterTime.Hour == ride.Start.Hour
-                                              && p.RegisterTime.Minute == ride.Start.Minute
-                                              && p.RegisterTime.Second == ride.Start.Second)
-                                    .First();
-                var finishPoint = db.Points.Where(p => p.RegisterTime.Year == ride.Finish.Year
-                                               && p.RegisterTime.Month == ride.Finish.Month
-                                               && p.RegisterTime.Day == ride.Finish.Day
-                                               && p.RegisterTime.Hour == ride.Finish.Hour
-                                               && p.RegisterTime.Minute == ride.Finish.Minute
-                                               && p.RegisterTime.Second == ride.Finish.Second)
-                                      .First();
+                var startPoint = paths.FindExactPoint(vehicleId, time.Start);
+                var finishPoint = paths.FindExactPoint(vehicleId, time.Finish);
+                if (startPoint == null || finishPoint == null) continue;
+                
                 var mileage = await CalculateRideMileage(startPoint.Point, finishPoint.Point);
                 DateOnly date = default;
                 switch (_interval)

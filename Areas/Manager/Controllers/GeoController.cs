@@ -9,36 +9,28 @@ using NetTopologySuite.Geometries;
 using NetTopologySuite.IO;
 using Newtonsoft.Json;
 using System.Text.Json;
+using Autopark.Services.Vehicles;
 
 namespace Autopark.Areas.Manager.Controllers
 {
     [ApiController]
     public class GeoController(ApplicationDbContext db, IConfiguration options,
-        IPathsService paths) : BaseManagerController(db)
+        IPathsService paths, IVehiclesService vehicles) : BaseManagerController(db)
     {
-        private readonly IPathsService _paths = paths;
-        private readonly IConfiguration _options = options;
-
         [HttpGet]
         [Route("{vehicleId}")]
         public IActionResult GetPaths(
             int vehicleId, [FromQuery] DateTime start, [FromQuery] DateTime finish,
             [FromHeader] string timeZoneId, [FromHeader] bool displayGeoJson = false)
         {
-            Vehicle vehicle = _db.Vehicles.Find(vehicleId)!;
-            if (vehicle == null)
-            {
-                return BadRequest("Vehicle id is invalid");
-            }
-
+            Vehicle? vehicle = vehicles.FindVehicleById(vehicleId);
+            if (vehicle == null) return NoContent();
+            
             if (!TimeZoneInfo.TryFindSystemTimeZoneById(timeZoneId, out TimeZoneInfo? timeZoneInfo))
                 return BadRequest("Specified time zone can't be parsed");
 
-            List<Geopoint> path = [.. _db
-                .Points
-                .Where(p => p.VehicleId == vehicle.Id
-                    && p.RegisterTime >= start
-                    && p.RegisterTime <= finish)];
+            List<Geopoint>? path = paths.ReadAllPoints(vehicleId, start, finish);
+            if (path == null) return NoContent();
 
             path.ForEach(p => p.RegisterTime = TimeZoneInfo.ConvertTimeFromUtc(p.RegisterTime, timeZoneInfo));
 
@@ -56,33 +48,17 @@ namespace Autopark.Areas.Manager.Controllers
         [Route("{vehicleId}/{start}/{finish}")]
         public async Task<IActionResult> FindRides(int vehicleId, DateTime start, DateTime finish)
         {
-            var rides = _db.Rides.
-                Where(r => r.VehicleId == vehicleId
-                && r.Start >= start
-                && r.Finish <= finish)
-                .OrderBy(r => r.Start)
-                .ToList();
+            var rides = paths.ReadAllRides(vehicleId, start, finish);
+            if (rides == null) return NoContent();
 
             Dictionary<int, Geopoint> starts = [];
             Dictionary<int, Geopoint> finishes = [];
             foreach (var ride in rides)
             {
-                var firstPoint = _db.Points
-                    .Where(p => ride.Start.Date == p.RegisterTime.Date
-                        && ride.Start.Hour == p.RegisterTime.Hour
-                        && ride.Start.Minute == p.RegisterTime.Minute
-                        && ride.Start.Second == p.RegisterTime.Second)
-                    .FirstOrDefault()
-                    ?? throw new Exception(
-                        "Ride " + ride.Id + " starting point wasn't found");
-                var lastPoint = _db.Points
-                    .Where(p => ride.Finish.Date == p.RegisterTime.Date
-                        && ride.Finish.Hour == p.RegisterTime.Hour
-                        && ride.Finish.Minute == p.RegisterTime.Minute
-                        && ride.Finish.Second == p.RegisterTime.Second)
-                    .FirstOrDefault()
-                    ?? throw new Exception(
-                        "Ride " + ride.Id + " finishing point wasn't found");
+                var firstPoint = paths.FindExactPoint(vehicleId, start) 
+                                 ?? throw new Exception("Ride " + ride.Id + " starting point wasn't found");
+                var lastPoint = paths.FindExactPoint(vehicleId, start) 
+                                ?? throw new Exception("Ride " + ride.Id + " finishing point wasn't found");
                 starts.Add(ride.Id, firstPoint);
                 finishes.Add(ride.Id, lastPoint);
             }
@@ -91,7 +67,7 @@ namespace Autopark.Areas.Manager.Controllers
 
             using HttpClient client = new();
             client.DefaultRequestHeaders.Add("Accept-Language", "ru-RU");
-            string apiKey = _options["Autopark:ORSDirectionsAPI"]!;
+            string apiKey = options["Autopark:ORSDirectionsAPI"]!;
             string orsUrl = "https://api.openrouteservice.org/geocode/reverse?size=1&api_key=" + apiKey;
             foreach (var ride in rides)
             {
@@ -135,7 +111,7 @@ namespace Autopark.Areas.Manager.Controllers
         [Route("{vehicleId}/{start}/{finish}")]
         public IActionResult FindPoints(int vehicleId, DateTime start, DateTime finish)
         {
-            var points = _paths.ReadAllPoints(vehicleId, start, finish);
+            var points = paths.ReadAllPoints(vehicleId, start, finish);
 
             return Ok(points);
         }
@@ -145,25 +121,21 @@ namespace Autopark.Areas.Manager.Controllers
         [AllowAnonymous]
         public IActionResult RenderPathMap(int vehicleId, [FromBody] TimeDto time)
         {
-            var rides = _db.Rides.
-                Where(r => r.VehicleId == vehicleId
-                    && r.Start >= time.Start
-                    && r.Finish <= time.End)
-                .OrderBy(r => r.Start)
-                .ToList();
-
+            var rides = paths.ReadAllRides(vehicleId, time.Start, time.Finish);
+            if (rides == null) return NoContent();
+            
             //get rides' coordinates
-            Dictionary<int, List<Geopoint>> paths = [];
-            rides.ForEach(r => paths.Add(r.Id, _paths.ReadAllPoints(vehicleId, r.Start, r.Finish)));
+            Dictionary<int, List<Geopoint>> paths1 = [];
+            rides.ForEach(r => paths1.Add(r.Id, paths.ReadAllPoints(vehicleId, r.Start, r.Finish)!));
             List<RideRenderInfo> info = [];
             var random = new Random();
             rides.ForEach(r =>
             {
-                var color = string.Format("#{0:X6}", random.Next(0x1000000));
+                var color = $"#{random.Next(0x1000000):X6}";
                 info.Add(new RideRenderInfo
                 {
                     Ride = r,
-                    Path = new LineString(paths[r.Id].Select(p => p.Point.Coordinate).ToArray()),
+                    Path = new LineString(paths1[r.Id].Select(p => p.Point.Coordinate).ToArray()),
                     Color = color
                 });
             });

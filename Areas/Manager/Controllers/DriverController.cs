@@ -19,6 +19,7 @@ namespace Autopark.Areas.Manager.Controllers
 
         [EnableCors("Frontend")]
         [HttpGet]
+        [ResponseCache(VaryByHeader = "User-Agent", Duration = 300)]
         public IActionResult Retrieve([FromQuery] PaginationFilter filter)
         {
             List<DriverDto> drivers = _db

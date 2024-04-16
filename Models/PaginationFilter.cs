@@ -7,7 +7,7 @@
         public PaginationFilter()
         {
             PageNum = 1;
-            Limit = 10;
+            Limit = 1;
         }
         public PaginationFilter(int pageNumber, int pageSize)
         {

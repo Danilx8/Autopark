@@ -6,6 +6,7 @@ namespace Autopark.Areas.Manager.Controllers
 {
     public class BrandController(ApplicationDbContext db) : BaseManagerController(db)
     {
+        [ResponseCache(VaryByHeader = "User-Agent", Duration = 300)]
         public IActionResult Retrieve()
         {
             List<Brand> brands = [.. _db

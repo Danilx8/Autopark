@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,7 +29,7 @@ builder.Services.AddAuthentication(options =>
             ValidateAudience = false,
             ValidIssuer = "Sample",
             ValidAudience = "Sample",
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("ByYM000OLlMQG6VVVp1OH7Xzyr7gHuw1qvUC5dcGt3SNM"))
+            IssuerSigningKey = new SymmetricSecurityKey("ByYM000OLlMQG6VVVp1OH7Xzyr7gHuw1qvUC5dcGt3SNM"u8.ToArray())
         };
     });
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -65,6 +66,8 @@ builder.Services.AddMvc()
     });
 builder.Services.AddScoped<IPathsService, PathService>();
 builder.Services.AddScoped<IVehiclesService, VehicleService>();
+builder.Services.AddMemoryCache();
+
 var app = builder.Build();
 
 app.UseDeveloperExceptionPage();
