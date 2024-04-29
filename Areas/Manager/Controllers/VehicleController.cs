@@ -7,7 +7,8 @@ using Autopark.Services.Vehicles;
 
 namespace Autopark.Areas.Manager.Controllers
 {
-    public class VehicleController(ApplicationDbContext db, IVehiclesService vehicleService) : BaseManagerController(db)
+    public class VehicleController(ApplicationDbContext db, IVehiclesService vehicleService, 
+        ILogger<VehicleController> logger) : BaseManagerController(db)
     {
         [EnableCors("Frontend")]
         [HttpGet]
@@ -24,22 +25,36 @@ namespace Autopark.Areas.Manager.Controllers
             }
             
             List<Vehicle> vehicles = [];
+            var limit = filter.Limit;
             if (enterpriseId == null)
             {
                 int enterpriseIndex = 0;
-                while(vehicles.Count < filter.Limit || enterpriseIndex < availableEnterprises.Count)
+                while(vehicles.Count < filter.Limit && enterpriseIndex < availableEnterprises.Count)
                 {
                     vehicles.AddRange(vehicleService.GetAllVehicles(availableEnterprises[enterpriseIndex], filter));
                     ++enterpriseIndex;
                 }
 
+                if (vehicles.Count > filter.Limit)
+                {
+                    var limitedSegment = new ArraySegment<Vehicle>(vehicles.ToArray());
+                    vehicles = limitedSegment[..(limit - 1)].ToList();
+                }
+                
+                var number = vehicles.Count;
+                logger.LogInformation("Requested all vehicles without specifying an enterprise. Returned " +
+                                       "{Number} vehicles of {Limit} limit requested.", number, limit);
                 return Ok(vehicles);
             }
             
             if (!availableEnterprises.Contains(enterpriseId ?? throw new Exception()))
                 return BadRequest("You aren't authorized to manage this enterprise");
-            
-            return Ok(vehicleService.GetAllVehicles(enterpriseId ?? throw new Exception(), filter));
+
+            vehicles = vehicleService.GetAllVehicles(enterpriseId ?? throw new Exception(), filter);
+            var count = vehicles.Count;
+            logger.LogInformation("Returned {Count} vehicles of requested {Limit} limit of the enterprise " +
+                                   "with id of {EnterpriseId}", count, limit, enterpriseId);
+            return Ok(vehicles);
         }
         
         [EnableCors("Frontend")]
@@ -63,6 +78,7 @@ namespace Autopark.Areas.Manager.Controllers
                 return Forbid();
             }
 
+            logger.LogInformation("By given name {Name} the following vehicle was found: {@Vehicle}", name, vehicle);
             return Ok(vehicle);
         }
 

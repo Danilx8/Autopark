@@ -14,8 +14,8 @@ using Autopark.Services.Vehicles;
 namespace Autopark.Areas.Manager.Controllers
 {
     [ApiController]
-    public class GeoController(ApplicationDbContext db, IConfiguration options,
-        IPathsService paths, IVehiclesService vehicles) : BaseManagerController(db)
+    public class GeoController(ApplicationDbContext db, IConfiguration options, IPathsService paths, 
+        IVehiclesService vehicles, ILogger<GeoController> logger) : BaseManagerController(db)
     {
         [HttpGet]
         [Route("{vehicleId}")]
@@ -125,8 +125,8 @@ namespace Autopark.Areas.Manager.Controllers
             if (rides == null) return NoContent();
             
             //get rides' coordinates
-            Dictionary<int, List<Geopoint>> paths1 = [];
-            rides.ForEach(r => paths1.Add(r.Id, paths.ReadAllPoints(vehicleId, r.Start, r.Finish)!));
+            Dictionary<int, List<Geopoint>> calculatedPaths = [];
+            rides.ForEach(r => calculatedPaths.Add(r.Id, paths.ReadAllPoints(vehicleId, r.Start, r.Finish, 1000)!));
             List<RideRenderInfo> info = [];
             var random = new Random();
             rides.ForEach(r =>
@@ -135,7 +135,7 @@ namespace Autopark.Areas.Manager.Controllers
                 info.Add(new RideRenderInfo
                 {
                     Ride = r,
-                    Path = new LineString(paths1[r.Id].Select(p => p.Point.Coordinate).ToArray()),
+                    Path = new LineString(calculatedPaths[r.Id].Select(p => p.Point.Coordinate).ToArray()),
                     Color = color
                 });
             });
@@ -152,6 +152,10 @@ namespace Autopark.Areas.Manager.Controllers
             using var stringWriter = new StringWriter();
             using var jsonWriter = new JsonTextWriter(stringWriter);
             serializer.Serialize(jsonWriter, response);
+            
+            logger.LogInformation("Successfully rendered a JSON for all rides map for the vehicle with id of " +
+                                  "{VehicleId} in the timespan of {@Time}", vehicleId, time);
+            
             return Ok(stringWriter.ToString());
         }
     }

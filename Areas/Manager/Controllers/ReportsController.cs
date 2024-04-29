@@ -11,14 +11,13 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Autopark.Areas.Manager.Controllers
 {
-    public class ReportsController(ApplicationDbContext db, IPathsService paths,
-        IConfiguration options, IMemoryCache cache) : BaseManagerController(db)
+    public class ReportsController(ApplicationDbContext db, IPathsService paths, IConfiguration options, 
+        ILogger<ReportsController> logger) : BaseManagerController(db)
     {
         protected readonly IPathsService paths = paths;
 
         [AllowAnonymous]
         [Route("{vehicleId}/{interval}")]
-        [ResponseCache(VaryByHeader = "User-Agent", Duration = 300)]
         public async Task<IActionResult> CreateVehiclesReport(int vehicleId, string interval,
             [FromBody] TimeDto time)
         {
@@ -31,25 +30,24 @@ namespace Autopark.Areas.Manager.Controllers
 
             foreach(var ride in rides)
             {
-                var startPoint = paths.FindExactPoint(vehicleId, time.Start);
-                var finishPoint = paths.FindExactPoint(vehicleId, time.Finish);
+                var startPoint = paths.FindExactPoint(vehicleId, ride.Start);
+                var finishPoint = paths.FindExactPoint(vehicleId, ride.Finish);
                 if (startPoint == null || finishPoint == null) continue;
                 
                 var mileage = await CalculateRideMileage(startPoint.Point, finishPoint.Point);
-                DateOnly date = default;
-                switch (_interval)
+                DateOnly date = _interval switch
                 {
-                    case Interval.DAY:
-                        date = new DateOnly(ride.Start.Year, ride.Start.Month, ride.Start.Day);
-                        break;
-                    case Interval.MONTH:
-                        date = new DateOnly(ride.Start.Year, ride.Start.Month, 1);
-                        break;
-                }
+                    Interval.DAY => new DateOnly(ride.Start.Year, ride.Start.Month, ride.Start.Day),
+                    Interval.MONTH => new DateOnly(ride.Start.Year, ride.Start.Month, 1),
+                    _ => default
+                };
                 if (!mileages.TryGetValue(date, out double value)) mileages.Add(date, mileage);
                 else mileages[date] += mileage;
             };
 
+            logger.LogInformation("Successfully rendered a report for a vehicle with id of {vehicleId} in the " +
+                                  "timespan of {@Time}", vehicleId, time);
+            
             return Ok(mileages);
         }
 

@@ -7,8 +7,7 @@ using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Microsoft.AspNetCore.Mvc;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -67,6 +66,12 @@ builder.Services.AddMvc()
 builder.Services.AddScoped<IPathsService, PathService>();
 builder.Services.AddScoped<IVehiclesService, VehicleService>();
 builder.Services.AddMemoryCache();
+Log.Logger = new LoggerConfiguration()
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .CreateLogger();
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog().SetMinimumLevel(LogLevel.Information);
 
 var app = builder.Build();
 
