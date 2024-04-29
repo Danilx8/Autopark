@@ -7,6 +7,7 @@ namespace Autopark.Services.Vehicles
     {
         public List<Vehicle> GetAllVehicles(int enterpriseId, PaginationFilter filter);
         public Vehicle? FindVehicleById(int vehicleId);
+        public Vehicle? FindVehicleByName(string vehicleName);
         public int? CreateVehicle(VehicleDto vehicle, List<int> usersCompanies);
         public bool Update(VehicleDto vehicle, List<int> usersCompanies);
         public bool DeleteVehicle(int vehicleId, List<int> usersCompanies);

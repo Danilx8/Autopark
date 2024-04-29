@@ -31,6 +31,15 @@ namespace Autopark.Services.Vehicles
             return vehicle;
         }
 
+        public Vehicle? FindVehicleByName(string vehicleName)
+        {
+            if (cache.TryGetValue(vehicleName, out Vehicle? vehicle)) return vehicle;
+            
+            var uncachedVehicle = db.Vehicles.FirstOrDefault(v => v.Name == vehicleName);
+            cache.Set(vehicleName, uncachedVehicle);
+            return uncachedVehicle;
+        }
+
         public int? CreateVehicle(VehicleDto vehicle, List<int> usersCompanies)
         {
             vehicle.EnterpriseId ??= usersCompanies[0];

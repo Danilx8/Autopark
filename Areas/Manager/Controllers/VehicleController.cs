@@ -41,6 +41,30 @@ namespace Autopark.Areas.Manager.Controllers
             
             return Ok(vehicleService.GetAllVehicles(enterpriseId ?? throw new Exception(), filter));
         }
+        
+        [EnableCors("Frontend")]
+        [HttpPost]
+        public IActionResult FindByName([FromForm] string name)
+        {
+            List<int> availableEnterprises;
+            try
+            {
+                availableEnterprises = AuthorizeUsersEnterprises();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+
+            var vehicle = vehicleService.FindVehicleByName(name);
+            if (vehicle == null) return NoContent();
+            if (!availableEnterprises.Contains(vehicle.EnterpriseId ?? throw new Exception()))
+            {
+                return Forbid();
+            }
+
+            return Ok(vehicle);
+        }
 
         public IActionResult Create(VehicleDto vehicle)
         {
