@@ -1,4 +1,5 @@
-﻿using Autopark.Data;
+﻿using System.Transactions;
+using Autopark.Data;
 using Autopark.Models;
 using Microsoft.Extensions.Caching.Memory;
 using Autopark.Models.Dto;
@@ -6,7 +7,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Autopark.Services.Vehicles
 {
-    public class VehicleService(ApplicationDbContext db, IMemoryCache cache) : IVehiclesService
+    public class VehicleService(ApplicationDbContext db, IMemoryCache cache, ILogger<VehicleService> logger) 
+        : IVehiclesService
     {
         public List<Vehicle> GetAllVehicles(int enterpriseId, PaginationFilter filter)
         {
@@ -87,6 +89,9 @@ namespace Autopark.Services.Vehicles
 
         public bool Update(VehicleDto vehicle, List<int> usersCompanies)
         {
+            using var transactionScope = new TransactionScope();
+            logger.LogInformation("Transaction started");
+            
             Brand? brand = db
                 .Brands
                 .FirstOrDefault(b => b.Id == vehicle.BrandId);
@@ -99,8 +104,8 @@ namespace Autopark.Services.Vehicles
 
             if (enterprise == null) return false;
 
-            if (!usersCompanies.Contains((int)vehicle.EnterpriseId!)) return false; 
-            
+            if (!usersCompanies.Contains((int)vehicle.EnterpriseId!)) return false;
+
             db
                 .Vehicles
                 .Where(v => v.Id == vehicle.Id)
@@ -114,15 +119,19 @@ namespace Autopark.Services.Vehicles
                     .SetProperty(v => v.BrandId, v => vehicle.BrandId)
                     .SetProperty(v => v.EnterpriseId, v => vehicle.EnterpriseId)
                     .SetProperty(v => v.DriverId, v => vehicle.DriverId));
-            int number = db.SaveChanges();
-            if (number > 0)
+            int savedChangesNumber = db.SaveChanges();
+            
+            if (db.Vehicles.Find(vehicle.Id)?.DriverId == vehicle.DriverId) transactionScope.Complete(); 
+            logger.LogInformation("Transaction is complete successfully");
+            
+            if (savedChangesNumber > 0)
             {
                 cache.Set(vehicle.Id, db.Vehicles.First(v => v.Id == vehicle.Id), new MemoryCacheEntryOptions
                 {
                     AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
                 });
             }
-            
+
             return true;
         }
         
