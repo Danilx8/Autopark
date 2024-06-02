@@ -82,6 +82,7 @@ namespace Autopark.Areas.Manager.Controllers
             return Ok(vehicle);
         }
 
+        [HttpPost]
         public IActionResult Create(VehicleDto vehicle)
         {
             List<int> enterprises;
@@ -98,6 +99,7 @@ namespace Autopark.Areas.Manager.Controllers
             return Ok(id);
         }
 
+        [HttpPut]
         public IActionResult Update(VehicleDto vehicle)
         {
             List<int> enterprises;
@@ -113,6 +115,7 @@ namespace Autopark.Areas.Manager.Controllers
             return BadRequest("Couldn't update the vehicle");
         }
 
+        [HttpDelete]
         public IActionResult Delete(int id)
         {
             List<int> usersCompanies;

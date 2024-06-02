@@ -40,6 +40,7 @@ namespace Autopark.Areas.Manager.Controllers
             return Ok(drivers);
         }
 
+        [HttpPost]
         public IActionResult Create(DriverDto driver)
         {
             List<int> usersCompanies = new();
@@ -90,9 +91,10 @@ namespace Autopark.Areas.Manager.Controllers
             return Ok(newDriver.Id);
         }
 
+        [HttpPut]
         public IActionResult Update(DriverDto driver)
         {
-            List<int> usersCompanies = new();
+            List<int> usersCompanies = [];
             try
             {
                 usersCompanies = AuthorizeUsersEnterprises();
@@ -106,15 +108,13 @@ namespace Autopark.Areas.Manager.Controllers
 
             Enterprise? enterprise = _db
                 .Enterprises
-                .Where(e => e.Id == driver.EnterpriseId)
-                .FirstOrDefault();
+                .FirstOrDefault(e => e.Id == driver.EnterpriseId);
 
             if (enterprise == null) return BadRequest("Given enterprise does not exist");
 
             Vehicle? vehicle = _db
                 .Vehicles
-                .Where(v => v.Id == driver.VehicleId)
-                .FirstOrDefault();
+                .FirstOrDefault(v => v.Id == driver.VehicleId);
 
             if (vehicle == null && driver.VehicleId != 0) return BadRequest("Given vehicle does not exist");
 
@@ -155,7 +155,7 @@ namespace Autopark.Areas.Manager.Controllers
         [HttpDelete]
         public IActionResult Delete(int id)
         {
-            List<int> usersCompanies = new();
+            List<int> usersCompanies = [];
             try
             {
                 usersCompanies = AuthorizeUsersEnterprises();
@@ -167,8 +167,7 @@ namespace Autopark.Areas.Manager.Controllers
 
             Driver? driver = _db
                 .Drivers
-                .Where(d => d.Id == id)
-                .FirstOrDefault();
+                .FirstOrDefault(d => d.Id == id);
 
             if (driver == null) return NotFound("Given driver doesn't exist");
 

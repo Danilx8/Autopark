@@ -72,6 +72,7 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog().SetMinimumLevel(LogLevel.Information);
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
@@ -79,9 +80,16 @@ app.UseDeveloperExceptionPage();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
+    Console.Write("It is production");
     app.UseExceptionHandler("/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
+}
+else
+{
+    Console.Write("It is development");
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();

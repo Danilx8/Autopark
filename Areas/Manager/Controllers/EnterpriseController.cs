@@ -8,6 +8,7 @@ namespace Autopark.Areas.Manager.Controllers
     public class EnterpriseController(ApplicationDbContext db) : BaseManagerController(db)
     {
         [ResponseCache(VaryByHeader = "User-Agent", Duration = 300)]
+        [HttpGet]
         public ActionResult<IEnumerable<Enterprise>> Index()
         {
             List<Enterprise> enterprises = [.. _db

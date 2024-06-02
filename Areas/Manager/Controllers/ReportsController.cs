@@ -18,6 +18,7 @@ namespace Autopark.Areas.Manager.Controllers
 
         [AllowAnonymous]
         [Route("{vehicleId}/{interval}")]
+        [HttpPost]
         public async Task<IActionResult> CreateVehiclesReport(int vehicleId, string interval,
             [FromBody] TimeDto time)
         {
@@ -51,6 +52,7 @@ namespace Autopark.Areas.Manager.Controllers
             return Ok(mileages);
         }
 
+        [HttpGet]
         private async Task<double> CalculateRideMileage(Point start, Point finish)
         {
             var apiKey = options["Autopark:ORSDirectionsAPI"];
