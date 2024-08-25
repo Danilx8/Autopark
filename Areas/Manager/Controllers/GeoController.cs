@@ -122,14 +122,14 @@ namespace Autopark.Areas.Manager.Controllers
         public IActionResult RenderPathMap(int vehicleId, [FromBody] TimeDto time)
         {
             var rides = paths.ReadAllRides(vehicleId, time.Start, time.Finish);
-            if (rides == null) return NoContent();
+            if (rides?.Count == 0) return NoContent();
             
             //get rides' coordinates
             Dictionary<int, List<Geopoint>> calculatedPaths = [];
-            rides.ForEach(r => calculatedPaths.Add(r.Id, paths.ReadAllPoints(vehicleId, r.Start, r.Finish, 1000)!));
+            rides?.ForEach(r => calculatedPaths.Add(r.Id, paths.ReadAllPoints(vehicleId, r.Start, r.Finish, 1000)!));
             List<RideRenderInfo> info = [];
             var random = new Random();
-            rides.ForEach(r =>
+            rides?.ForEach(r =>
             {
                 var color = $"#{random.Next(0x1000000):X6}";
                 info.Add(new RideRenderInfo
