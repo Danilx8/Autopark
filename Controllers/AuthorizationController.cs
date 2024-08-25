@@ -55,7 +55,7 @@ namespace Autopark.Controllers
                 var token = new JwtSecurityToken(
                     issuer: "Sample",
                     audience: "Sample",
-                    expires: DateTime.Now.AddHours(3),
+                    expires: DateTime.Now.AddHours(6),
                     claims: authClaims,
                     signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
                     );

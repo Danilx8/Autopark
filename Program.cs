@@ -1,3 +1,4 @@
+using System.Net;
 using Autopark.Data;
 using Autopark.Models;
 using Autopark.Services.Paths;
@@ -80,14 +81,12 @@ app.UseDeveloperExceptionPage();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    Console.Write("It is production");
     app.UseExceptionHandler("/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 else
 {
-    Console.Write("It is development");
     app.UseSwagger();
     app.UseSwaggerUI();
 }
@@ -118,6 +117,16 @@ app.UseCookiePolicy(new CookiePolicyOptions
 });
 
 app.UseAuthentication();
+app.UseStatusCodePages(async context =>
+{
+    var request = context.HttpContext.Request;
+    var response = context.HttpContext.Response;
+    var path = request.Path.Value ?? "";
+    
+    if (response.StatusCode == (int)HttpStatusCode.Unauthorized && 
+        !path.StartsWith("/api", StringComparison.CurrentCultureIgnoreCase)) 
+        response.Redirect("/Authentication");
+});
 app.UseAuthorization();
 
 app.MapControllers();
